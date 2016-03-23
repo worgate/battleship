@@ -7,7 +7,7 @@ import playn.core.Game;
 
 
 public class MyGame extends Game.Default {
-    public static final int UPDATE_RATE = 25;
+    public static final int UPDATE_RATE = 60;
     private ScreenStack ss = new ScreenStack();
     protected final Clock.Source clock = new Clock.Source(UPDATE_RATE);
 

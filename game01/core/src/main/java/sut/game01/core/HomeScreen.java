@@ -1,49 +1,51 @@
 package sut.game01.core;
 import static playn.core.PlayN.*;
 
-import playn.core.Font;
+import playn.core.*;
 import react.UnitSlot;
-import tripleplay.game.*;
+import tripleplay.game.Screen;
+import tripleplay.game.ScreenStack;
 import tripleplay.ui.Label;
 import tripleplay.ui.Root;
 import tripleplay.ui.SimpleStyles;
 import tripleplay.ui.Style;
 import tripleplay.ui.layout.AxisLayout;
 import tripleplay.ui.*;
-public class HomeScreen extends UIScreen {
-
-    public static final Font TITLE_FONT = graphics().createFont("Helvetica",Font.Style.PLAIN,24);
-
-    private Root root;
+public class HomeScreen extends Screen {
     private TestScreen testScreen;
     private ScreenStack ss;
+    private ImageLayer bg;
+    private Image bgImage;
+    private ImageLayer startButton;
+    private Image start;
 
     public HomeScreen(ScreenStack ss){
         this.ss = ss;
         this.testScreen = new TestScreen(ss);
+        bgImage = assets().getImage("Images/mainbg.png");
+        bg = graphics().createImageLayer(bgImage);
+
+        start = assets().getImage("Images/start.png");
+        startButton = graphics().createImageLayer(start);
+        startButton.setTranslation(220,200);
 
     }
 
     @Override
     public void wasShown(){
         super.wasShown();
-        root = iface.createRoot(
-                AxisLayout.vertical().gap(15),
-                SimpleStyles.newSheet(), this.layer);
-        root.addStyles(Style.BACKGROUND
-                .is(Background.bordered(0xFFCCCCCC , 0xFF99CCFF ,5)
-                .inset(5,10)));
-        root.setSize(width(), height());
-
-        root.add(new Label("Event Driven Programming")  /*center of monitor*/
-            .addStyles(Style.FONT.is(HomeScreen.TITLE_FONT)));
+        this.layer.add(bg);
+        this.layer.add(startButton);
 
 
-        root.add(new Button("Start").onClick(new UnitSlot() {
-            public void onEmit(){
-                ss.push(testScreen);
+        startButton.addListener(new Mouse.LayerAdapter(){
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event){
+                    ss.push(testScreen);
             }
-        }));
+        });
+
+
 
 
     }

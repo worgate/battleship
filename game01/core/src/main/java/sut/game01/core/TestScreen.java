@@ -29,10 +29,9 @@ public class TestScreen extends Screen  {
             @Override
             public void onMouseUp(Mouse.ButtonEvent event){
                 ss.remove(ss.top());
+
             }
         });
-
-
     }
 
     @Override
