@@ -19,7 +19,7 @@ public class HomeScreen extends Screen {
     private ImageLayer startButton;
     private Image start;
 
-    public HomeScreen(ScreenStack ss){
+    public HomeScreen(final ScreenStack ss){
         this.ss = ss;
         this.testScreen = new TestScreen(ss);
         bgImage = assets().getImage("Images/mainbg.png");
@@ -28,6 +28,14 @@ public class HomeScreen extends Screen {
         start = assets().getImage("Images/start.png");
         startButton = graphics().createImageLayer(start);
         startButton.setTranslation(220,205);
+        
+        startButton.addListener(new Mouse.LayerAdapter(){
+        @Override
+        public void onMouseUp(Mouse.ButtonEvent event){
+                    ss.push(testScreen);
+            }
+        });
+
 
     }
 
@@ -36,14 +44,6 @@ public class HomeScreen extends Screen {
         super.wasShown();
         this.layer.add(bg);
         this.layer.add(startButton);
-
-        startButton.addListener(new Mouse.LayerAdapter(){
-            @Override
-            public void onMouseUp(Mouse.ButtonEvent event){
-                    ss.push(testScreen);
-            }
-        });
-
 
     }
 
