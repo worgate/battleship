@@ -24,6 +24,8 @@ public class HomeScreen extends Screen {
     private ImageLayer rankingButton;
     private Image select;
     private ImageLayer selectButton;
+    private Image exit;
+    private ImageLayer exitButton;
 
 
     //private ImageLayer tuButton;
@@ -43,8 +45,8 @@ public class HomeScreen extends Screen {
 
         start = assets().getImage("Images/button/start_mode.png");
         startButton = graphics().createImageLayer(start);
-        startButton.setTranslation(10,300);
-        startButton.setSize(200,30);
+        startButton.setTranslation(10,290);
+        startButton.setSize(250,40);
 
         tutorial = assets().getImage("Images/button/tutorial_mode.png");
         tutorialButton = graphics().createImageLayer(tutorial);
@@ -60,6 +62,12 @@ public class HomeScreen extends Screen {
         selectButton = graphics().createImageLayer(select);
         selectButton.setTranslation(10,405);
         selectButton.setSize(200,30);
+
+        exit = assets().getImage("Images/button/exit_mode.png");
+        exitButton = graphics().createImageLayer(exit);
+        exitButton.setTranslation(10,440);
+        exitButton.setSize(200,30);
+
 
 
 
@@ -97,6 +105,7 @@ public class HomeScreen extends Screen {
             }
         });
 
+
     }
 
     @Override
@@ -107,6 +116,7 @@ public class HomeScreen extends Screen {
         this.layer.add(tutorialButton);
         this.layer.add(rankingButton);
         this.layer.add(selectButton);
+        this.layer.add(exitButton);
 
     }
 
