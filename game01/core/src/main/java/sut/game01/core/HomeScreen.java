@@ -6,29 +6,94 @@ import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
 
 public class HomeScreen extends Screen {
-    private TestScreen testScreen;
-    private Story1 story1;
     private ScreenStack ss;
+
+
+    private Story1 story1;
+    private Tutorials tutorials;
+    private Ranking rankings;
+    private SelectLevel selectLevel;
     private ImageLayer bg;
     private Image bgImage;
-    private ImageLayer startButton;
+
     private Image start;
+    private ImageLayer startButton;
+    private Image tutorial;
+    private ImageLayer tutorialButton;
+    private Image ranking;
+    private ImageLayer rankingButton;
+    private Image select;
+    private ImageLayer selectButton;
+
+
+    //private ImageLayer tuButton;
+    //private Image tu;
 
     public HomeScreen(final ScreenStack ss){
         this.ss = ss;
-        this.testScreen = new TestScreen(ss);
         this.story1 = new Story1(ss);
-        bgImage = assets().getImage("Images/mainbg.png");
+        this.tutorials = new Tutorials(ss);
+        this.rankings = new Ranking(ss);
+        this.selectLevel = new SelectLevel(ss);
+
+
+
+        bgImage = assets().getImage("Images/bg.png");
         bg = graphics().createImageLayer(bgImage);
 
-        start = assets().getImage("Images/button/start.png");
+        start = assets().getImage("Images/button/start_mode.png");
         startButton = graphics().createImageLayer(start);
-        startButton.setTranslation(230,300);
-        
+        startButton.setTranslation(10,300);
+        startButton.setSize(200,30);
+
+        tutorial = assets().getImage("Images/button/tutorial_mode.png");
+        tutorialButton = graphics().createImageLayer(tutorial);
+        tutorialButton.setTranslation(10,335);
+        tutorialButton.setSize(200,30);
+
+        ranking = assets().getImage("Images/button/ranking_mode.png");
+        rankingButton = graphics().createImageLayer(ranking);
+        rankingButton.setTranslation(10,370);
+        rankingButton.setSize(200,30);
+
+        select = assets().getImage("Images/button/level_mode.png");
+        selectButton = graphics().createImageLayer(select);
+        selectButton.setTranslation(10,405);
+        selectButton.setSize(200,30);
+
+
+
+        /* tutorial button
+        tu = assets().getImage("Images/button/butt_tutorial.png");
+        tuButton = graphics().createImageLayer(tu);
+        tuButton.setTranslation(600,10);
+        tuButton.setSize(40,40);
+        */
+
         startButton.addListener(new Mouse.LayerAdapter(){
         @Override
         public void onMouseUp(Mouse.ButtonEvent event){
                     ss.push(story1);
+            }
+        });
+
+        tutorialButton.addListener(new Mouse.LayerAdapter(){
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event){
+                ss.push(tutorials);
+            }
+        });
+
+        rankingButton.addListener(new Mouse.LayerAdapter(){
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event){
+                ss.push(rankings);
+            }
+        });
+        selectButton.addListener(new Mouse.LayerAdapter(){
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event){
+                ss.push(selectLevel);
             }
         });
 
@@ -39,6 +104,9 @@ public class HomeScreen extends Screen {
         super.wasShown();
         this.layer.add(bg);
         this.layer.add(startButton);
+        this.layer.add(tutorialButton);
+        this.layer.add(rankingButton);
+        this.layer.add(selectButton);
 
     }
 

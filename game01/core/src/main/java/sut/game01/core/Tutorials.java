@@ -15,7 +15,7 @@ public class Tutorials extends Screen{
     public Tutorials(final ScreenStack ss) {
         this.ss = ss;
 
-        Image bgImage = assets().getImage("Images/story/tutorials.png");
+        Image bgImage = assets().getImage("Images/story/tutorial.png");
         this.bg = graphics().createImageLayer(bgImage);
 
         Image backImage = assets().getImage("Images/back.png");
