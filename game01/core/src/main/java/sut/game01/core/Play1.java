@@ -1,17 +1,18 @@
 package sut.game01.core;
-import static playn.core.PlayN.*;
-
-import tripleplay.game.Screen;
-import tripleplay.game.ScreenStack;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Mouse;
+import tripleplay.game.Screen;
+import tripleplay.game.ScreenStack;
+import characters.Airplane;
+import static playn.core.PlayN.assets;
+import static playn.core.PlayN.graphics;
 
 public class Play1 extends Screen{
     private  final ScreenStack ss;
     private  ImageLayer bg;
     private  ImageLayer backButton;
-
+    private  Airplane airplane;
     public Play1(final ScreenStack ss) {
         this.ss = ss;
 
@@ -37,7 +38,18 @@ public class Play1 extends Screen{
         super.wasShown();
         this.layer.add(bg);
         this.layer.add(backButton);
+
+        airplane = new Airplane(560f ,400f);
+        this.layer.add(airplane.layer());
     }
+    @Override
+    public void update(int delta){
+        super.update(delta);
+        airplane.update(delta);
+    }
+
+
+
 
 
 }
