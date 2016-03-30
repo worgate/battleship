@@ -8,7 +8,7 @@ import tripleplay.game.ScreenStack;
 public class HomeScreen extends Screen {
     private ScreenStack ss;
 
-
+    private Play1 play1;
     private Story1 story1;
     private Tutorials tutorials;
     private Ranking rankings;
@@ -37,7 +37,7 @@ public class HomeScreen extends Screen {
         this.tutorials = new Tutorials(ss);
         this.rankings = new Ranking(ss);
         this.selectLevel = new SelectLevel(ss);
-
+        this.play1 = new Play1(ss);
 
 
         bgImage = assets().getImage("Images/bg.png");
@@ -81,7 +81,7 @@ public class HomeScreen extends Screen {
         startButton.addListener(new Mouse.LayerAdapter(){
         @Override
         public void onMouseUp(Mouse.ButtonEvent event){
-                    ss.push(story1);
+                    ss.push(play1);
             }
         });
 
