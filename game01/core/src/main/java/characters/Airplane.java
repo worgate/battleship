@@ -42,8 +42,9 @@ public class Airplane {
                 sprite.setSprite(spriteIndex);
                 sprite.layer().setOrigin(sprite.width() / 2f,
                         sprite.height() / 2f);
+                sprite.layer().setSize(200,120);
+                sprite.layer().setTranslation(x, y + 13f);
 
-                sprite.layer().setTranslation(200, 70 + 13f);
                 hasLoaded = true;
             }
 
