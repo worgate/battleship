@@ -1,14 +1,25 @@
 package characters;
+import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.*;
 import playn.core.*;
 import playn.core.util.Callback;
+import playn.core.util.Clock;
 import sprite.Sprite;
 import sprite.SpriteLoader;
+import sut.game01.core.Play1;
 
 
 public class Airplane {
     private Sprite sprite;
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
+
+    private Boolean contacted;
+    private int contactCheck;
+    Body body;
+    Body other;
+
 
     public enum State{
         IDLE , FIRE , DESTROY
@@ -19,8 +30,8 @@ public class Airplane {
     private  int e = 0;
     private int offset = 8;
 
-    public Airplane(final float x ,final float y){
-        PlayN.keyboard().setListener(new Keyboard.Adapter(){
+    public Airplane(final World world,final float x , final float y){
+       /* PlayN.keyboard().setListener(new Keyboard.Adapter(){
             @Override
             public void onKeyUp(Keyboard.Event event) {
                 if(event.key() == Key.SPACE){
@@ -31,7 +42,7 @@ public class Airplane {
                     }
                 }
             }
-        });
+        });*/
 
 
 
@@ -42,9 +53,12 @@ public class Airplane {
                 sprite.setSprite(spriteIndex);
                 sprite.layer().setOrigin(sprite.width() / 2f,
                         sprite.height() / 2f);
-                sprite.layer().setSize(200,120);
-                sprite.layer().setTranslation(x, y + 13f);
+                sprite.layer().setSize(312,256);
 
+                sprite.layer().setTranslation(x, y );
+                body = initPhysicsBody(world,
+                        Play1.M_PER_PIXEL * x,
+                        Play1.M_PER_PIXEL * y);
                 hasLoaded = true;
             }
 
@@ -54,10 +68,31 @@ public class Airplane {
             }
         });
 
+
     }
 
     public Layer layer(){
         return sprite.layer();
+    }
+    private Body initPhysicsBody(World world,float x , float y){
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyType.DYNAMIC;
+        bodyDef.position = new Vec2(0,0);
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(
+                sprite.layer().height()  * Play1.M_PER_PIXEL  /2 , 60 * Play1.M_PER_PIXEL );
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 0.4f;
+        fixtureDef.friction = 0.1f;
+        body.createFixture(fixtureDef);
+
+        body.setLinearDamping(0.2f);
+        body.setTransform(new Vec2(x/2, y/2), 0f);
+
+        return  body;
     }
 
     public void update(int delta){
@@ -76,5 +111,15 @@ public class Airplane {
             sprite.setSprite(spriteIndex);
             e = 0;
         }
+
 }
+
+    public void paint(Clock clock) {
+        if (!hasLoaded){ return;}
+
+        sprite.layer().setTranslation(
+                body.getPosition().x / Play1.M_PER_PIXEL  ,
+                body.getPosition().y / Play1.M_PER_PIXEL );
+        sprite.layer().setRotation(body.getAngle());
+    }
 }

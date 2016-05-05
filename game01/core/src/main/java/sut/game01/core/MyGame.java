@@ -7,12 +7,12 @@ import playn.core.Game;
 
 
 public class MyGame extends Game.Default {
-    public static final int UPDATE_RATE = 60;
+    public static final int UPDATE_RATE = 50;
     private ScreenStack ss = new ScreenStack();
     protected final Clock.Source clock = new Clock.Source(UPDATE_RATE);
 
     public MyGame() {
-    super(UPDATE_RATE); // call update every 33ms (30 times per second)
+    super(UPDATE_RATE);
   }
 
 
@@ -25,11 +25,14 @@ public class MyGame extends Game.Default {
   @Override
   public void update(int delta) {
       ss.update(delta);
+
   }
 
   @Override
   public void paint(float alpha) {
     clock.paint(alpha);
       ss.paint(clock);
+
   }
+
 }

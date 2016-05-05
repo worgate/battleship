@@ -2,6 +2,7 @@ package sut.game01.core;
 import static playn.core.PlayN.*;
 
 import playn.core.*;
+import playn.core.util.Clock;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
 
@@ -13,6 +14,7 @@ public class HomeScreen extends Screen {
     private Tutorials tutorials;
     private Ranking rankings;
     private SelectLevel selectLevel;
+
     private ImageLayer bg;
     private Image bgImage;
 
@@ -33,13 +35,15 @@ public class HomeScreen extends Screen {
 
     public HomeScreen(final ScreenStack ss){
         this.ss = ss;
+
         this.story1 = new Story1(ss);
         this.tutorials = new Tutorials(ss);
         this.rankings = new Ranking(ss);
         this.selectLevel = new SelectLevel(ss);
         this.play1 = new Play1(ss);
 
-
+        System.out.println("Home Screen");
+        System.out.println( ss.size() );
         bgImage = assets().getImage("Images/bg.png");
         bg = graphics().createImageLayer(bgImage);
 
@@ -69,14 +73,15 @@ public class HomeScreen extends Screen {
         exitButton.setSize(200,30);
 
 
-
-
-        /* tutorial button
-        tu = assets().getImage("Images/button/butt_tutorial.png");
-        tuButton = graphics().createImageLayer(tu);
-        tuButton.setTranslation(600,10);
-        tuButton.setSize(40,40);
-        */
+        keyboard().setListener(new Keyboard.Adapter(){
+            @Override
+            public void onKeyUp(Keyboard.Event event) {
+                if(event.key() == Key.ENTER ){
+                    ss.push(new Story3(ss));
+                }
+            }
+        });
+        
 
         startButton.addListener(new Mouse.LayerAdapter(){
         @Override
@@ -104,6 +109,12 @@ public class HomeScreen extends Screen {
                 ss.push(selectLevel);
             }
         });
+        exitButton.addListener(new Mouse.LayerAdapter(){
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event) {
+                System.exit(0);
+            }
+        });
 
 
     }
@@ -119,8 +130,6 @@ public class HomeScreen extends Screen {
         this.layer.add(exitButton);
 
     }
-
-
 
 
 }

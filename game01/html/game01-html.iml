@@ -12,6 +12,8 @@
     <orderEntry type="module" module-name="game01-core" />
     <orderEntry type="library" name="Maven: com.googlecode.playn:playn-core:1.9" level="project" />
     <orderEntry type="library" name="Maven: com.samskivert:pythagoras:1.4.2" level="project" />
+    <orderEntry type="library" name="Maven: com.googlecode.playn:playn-jbox2d:1.9" level="project" />
+    <orderEntry type="library" name="Maven: org.jbox2d:jbox2d-library:2.2.1.1" level="project" />
     <orderEntry type="library" name="Maven: com.threerings:tripleplay:1.9" level="project" />
     <orderEntry type="library" name="Maven: com.threerings:react:1.4.1" level="project" />
     <orderEntry type="module" module-name="game01-core" />
@@ -19,8 +21,8 @@
     <orderEntry type="library" name="Maven: com.googlecode.playn:playn-html:1.9" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.playn:playn-core:sources:1.9" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.playn:playn-webgl:1.9" level="project" />
-    <orderEntry type="library" name="Maven: com.googlecode.playn:playn-webgl:sources:1.9" level="project" />
     <orderEntry type="library" name="Maven: com.google.gwt:gwt-user:2.6.1" level="project" />
+    <orderEntry type="library" name="Maven: com.googlecode.playn:playn-webgl:sources:1.9" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:1.0.0.GA" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:sources:1.0.0.GA" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20090211" level="project" />
