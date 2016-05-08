@@ -54,7 +54,7 @@ public class Airplane {
                 sprite.layer().setOrigin(sprite.width() / 2f,
                         sprite.height() / 2f);
                 sprite.layer().setSize(312,256);
-
+                sprite.layer().setScale(0.5f,0.5f);
                 sprite.layer().setTranslation(x, y );
                 body = initPhysicsBody(world,
                         Play1.M_PER_PIXEL * x,
@@ -72,6 +72,7 @@ public class Airplane {
     }
 
     public Layer layer(){
+
         return sprite.layer();
     }
     private Body initPhysicsBody(World world,float x , float y){
@@ -82,7 +83,7 @@ public class Airplane {
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(
-                sprite.layer().height()  * Play1.M_PER_PIXEL  /2 , 60 * Play1.M_PER_PIXEL );
+                (sprite.layer().height() +50) * Play1.M_PER_PIXEL   /4 , (45) * Play1.M_PER_PIXEL );
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 0.4f;
@@ -90,12 +91,13 @@ public class Airplane {
         body.createFixture(fixtureDef);
 
         body.setLinearDamping(0.2f);
-        body.setTransform(new Vec2(x/2, y/2), 0f);
+        body.setTransform(new Vec2(x, y), 0f);
 
         return  body;
     }
 
     public void update(int delta){
+
         if(hasLoaded == false) return;
 
         e = e + delta;
@@ -105,8 +107,6 @@ public class Airplane {
                 case FIRE: offset = 4; break;
                 case DESTROY: offset = 8; break;
             }
-
-
             spriteIndex = offset + ((spriteIndex +1) % 4);
             sprite.setSprite(spriteIndex);
             e = 0;

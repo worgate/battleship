@@ -9,6 +9,9 @@ import playn.core.util.Clock;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
 import characters.Airplane;
+
+import java.util.ArrayList;
+
 import static playn.core.PlayN.assets;
 import static playn.core.PlayN.graphics;
 import static playn.core.PlayN.mouse;
@@ -26,11 +29,14 @@ public class Play1 extends Screen{
     private World world;
     private boolean showDebugDraw = true;
     private DebugDrawBox2D debugDraw;
+    private int count = -1;
+    private int z;
     BodyDef bodyDef;
-
-
+    Airplane air;
+    ArrayList<Airplane> collect = new ArrayList<Airplane>();
     public Play1(final ScreenStack ss) {
         this.ss = ss;
+        graphics().rootLayer().clear();
 
         final Vec2 gravity = new Vec2(0.0f , 10.0f);
         world = new World(gravity);
@@ -42,8 +48,15 @@ public class Play1 extends Screen{
             public void onMouseUp(Mouse.ButtonEvent event) {
                 //gravity.set(10f,0.0f);
                 //world.setGravity(gravity);
+                  air = new  Airplane(world ,event.x() ,event.y());
+                  collect.add(air);
+                  count++;
+                for (int i = 0 ; i <= count ; i++){
+                    graphics().rootLayer().add(collect.get(i).layer());
+                }
 
-                bodyDef = new BodyDef();
+
+                /*bodyDef = new BodyDef();
                 bodyDef.type = BodyType.DYNAMIC;
                 bodyDef.position = new Vec2(event.x() * M_PER_PIXEL,event.y()*M_PER_PIXEL);
                 Body body = world.createBody(bodyDef);
@@ -56,14 +69,14 @@ public class Play1 extends Screen{
                 fixtureDef.friction = 0.2f;
                 fixtureDef.restitution = 0.4f;
                 body.createFixture(fixtureDef);
-                body.setLinearDamping(0.2f);
+                body.setLinearDamping(0.2f);*/
             }
         });
 
         Image bgImage = assets().getImage("Images/story/play1.png");
         this.bg = graphics().createImageLayer(bgImage);
 
-        Image backImage = assets().getImage("Images/back.png");
+        final Image backImage = assets().getImage("Images/back.png");
         this.backButton = graphics().createImageLayer(backImage);
         backButton.setTranslation(0,400);
 
@@ -71,6 +84,10 @@ public class Play1 extends Screen{
             @Override
             public void onMouseUp(Mouse.ButtonEvent event){
                 ss.remove(ss.top());
+                ss.remove(ss.top());
+               // System.out.println( ss.size());
+                ss.push(new HomeScreen(ss));
+
 
 
             }
@@ -84,6 +101,7 @@ public class Play1 extends Screen{
         this.layer.add(backButton);
 
         airplane = new Airplane(world,560f ,400f);
+        airplane.layer().setScale(0.5f,0.5f);
         this.layer.add(airplane.layer());
 
         if (showDebugDraw){
@@ -132,6 +150,9 @@ public class Play1 extends Screen{
         super.update(delta);
         world.step(0.033f,10,10);
         airplane.update(delta);
+        for (int i = 0 ; i <= count ; i++){
+            collect.get(i).update(delta);
+        }
 
     }
 
@@ -139,6 +160,9 @@ public class Play1 extends Screen{
     public void paint(Clock clock) {
         super.paint(clock);
         airplane.paint(clock);
+        for (int i = 0 ; i <= count ; i++){
+            collect.get(i).paint(clock);
+        }
         if (showDebugDraw){
             debugDraw.getCanvas().clear();
             world.drawDebugData();
