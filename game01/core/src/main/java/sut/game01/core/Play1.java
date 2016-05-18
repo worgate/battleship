@@ -43,7 +43,7 @@ public class Play1 extends Screen{
     BodyDef bodyDef;
     //Airplane air;
 
-    private HashMap bodies = new HashMap<Body,Json.Object>();
+    private static HashMap bodies = new HashMap<Body,String>();
     private int i = 0;
     private String debugString = "Hello";
     private  int score = 0 ;
@@ -51,8 +51,11 @@ public class Play1 extends Screen{
     private  Mario mario;
     private Ciws ciws;
 
+    Image playbg;
+    ImageLayer bglayer;
 
-
+    Image ship;
+    ImageLayer shipL;
     public Play1(final ScreenStack ss) {
         this.ss = ss;
         this.layer.clear();
@@ -65,6 +68,16 @@ public class Play1 extends Screen{
         world.setAutoClearForces(true);
 
 
+        playbg = assets().getImage("/images/sea_bg.png");
+        bglayer = graphics().createImageLayer(playbg);
+        //bglayer.setScale(0.9f);
+        //bglayer.setTranslation(480f/2,640f/2);
+
+
+        ship = assets().getImage("/images/char/ship.png");
+        shipL = graphics().createImageLayer(ship);
+        shipL.setScale(0.9f);
+        shipL.setTranslation(-250f,350f);
 
         ///==============================OBJECT SETUP ========================///
         /*final BodyDef bodyDef1 = new BodyDef();
@@ -100,9 +113,19 @@ public class Play1 extends Screen{
 
                 Body a = contact.getFixtureA().getBody();
                 Body b = contact.getFixtureB().getBody();
-                System.out.println("A = " + bodies.get(a) + a.getPosition());
-                System.out.println("B = " + bodies.get(b) + b.getPosition() );
-                System.out.println(bodies.values());
+                //System.out.println("A = " + bodies.get(a) + a.getPosition());
+               // System.out.println("B = " + bodies.get(b) + b.getPosition() );
+                if (bodies.get(a) == "CIWS" ||bodies.get(a) == "CIWS" ){
+
+                }else{
+                    System.out.println("Hit!!!");
+                    b.setActive(false);
+
+                }
+
+
+
+                //System.out.println(bodies.values());
 
 
 
@@ -135,12 +158,13 @@ public class Play1 extends Screen{
         });
 
 
-
+        airplane = new Airplane(world,400f,20f);
+        this.layer.add(airplane.layer());
 
 
         Image backImage = assets().getImage("Images/back.png");
         backButton = graphics().createImageLayer(backImage);
-        backButton.setTranslation(0,400);
+        backButton.setTranslation(20,50);
 
         /*Body ground = world.createBody(new BodyDef());
         EdgeShape groundShape = new EdgeShape();
@@ -181,9 +205,14 @@ public class Play1 extends Screen{
         super.wasShown();
         //air = new Airplane(world,5f,400f);
        //this.layer.add(air.layer());
-        ciws = new Ciws(world,70f,420f);
+
+        //graphics().rootLayer().add(bglayer);
+        ciws = new Ciws(world,70f,420f,bodies);
+
         this.layer.add(ciws.layer());
         this.layer.add(backButton);
+        this.layer.add(shipL);
+        this.layer.add(bglayer);
 
 
         if (showDebugDraw){
@@ -213,6 +242,7 @@ public class Play1 extends Screen{
     public void update(int delta){
         super.update(delta);
         world.step(0.033f,10,10);
+        airplane.update(delta);
        //air.update(delta);
         ciws.update(delta);
     }
@@ -222,6 +252,7 @@ public class Play1 extends Screen{
         super.paint(clock);
        // mario.paint(clock);
         //air.paint(clock);
+        airplane.paint(clock);
         ciws.paint(clock);
 
         if (showDebugDraw){

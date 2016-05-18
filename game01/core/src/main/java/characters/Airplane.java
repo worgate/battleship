@@ -62,6 +62,7 @@ public class Airplane {
                         Play1.M_PER_PIXEL * x,
                         Play1.M_PER_PIXEL * y);
                 hasLoaded = true;
+
             }
 
             @Override
@@ -103,7 +104,7 @@ public class Airplane {
     }
     private Body initPhysicsBody(World world,float x , float y){
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyType.DYNAMIC;
+        bodyDef.type = BodyType.STATIC;
         bodyDef.position = new Vec2(0,0);
         Body body = world.createBody(bodyDef);
 
@@ -155,6 +156,7 @@ public class Airplane {
         return String.valueOf(layer().rotation());
 
     }
+
 
 
 

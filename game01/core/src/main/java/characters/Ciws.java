@@ -10,6 +10,8 @@ import sprite.Sprite;
 import sprite.SpriteLoader;
 import sut.game01.core.Play1;
 
+import java.util.HashMap;
+
 
 public class Ciws {
     private Sprite sprite;
@@ -24,6 +26,8 @@ public class Ciws {
     private float x,y;
     private float yk;
     private float mx,my;
+
+
     public enum State{
         IDLE
     }
@@ -34,7 +38,8 @@ public class Ciws {
     private int offset = 8;
 
 
-    public Ciws(final World world,final float x , final float y){
+
+    public Ciws(final World world,final float x , final float y, final HashMap<Body,String> bodies){
         this.x = x;
         this.y = y;
 
@@ -53,6 +58,7 @@ public class Ciws {
                         Play1.M_PER_PIXEL * x,
                         Play1.M_PER_PIXEL * y);
                 hasLoaded = true;
+                bodies.put(body,"CIWS");
             }
 
             @Override
@@ -63,6 +69,8 @@ public class Ciws {
 
 
         PlayN.mouse().setListener(new Mouse.Adapter(){
+
+
             @Override
             public void onMouseMove(Mouse.MotionEvent event) {
                 mx = event.x() ;
@@ -74,14 +82,14 @@ public class Ciws {
                 diffY = Math.abs(x1 - x) ;
                 diffX = Math.abs(y1 - y);
                 angle = Math.toDegrees(Math.atan(diffY / diffX));
-                /*if (angle < 30f){
-                    angle = 30f;
-                }else if (angle > 80f){
-                    angle = 80f;
-                }*/
-                System.out.println("X :" + x1 + "   Y :" + y1 + "Degree " + angle);
+                if (angle < 38f){
+                    angle = 38f;
+                }else if (angle > 86f){
+                    angle = 86f;
+                }
 
-                // System.out.println(angle);
+                //System.out.println("X :" + x1 + "   Y :" + y1 + "Degree " + angle);
+
             }
 
             @Override
@@ -90,7 +98,7 @@ public class Ciws {
                 bodyDef.type = BodyType.DYNAMIC;
 
                 bodyDef.position = new Vec2( (x) / 26.666667f , (y) / 26.666667f);
-                Body body = world.createBody(bodyDef);
+                Body body1 = world.createBody(bodyDef);
                 /*
                 bodies.put(body, "test_" + i);
                 i++;
@@ -103,20 +111,24 @@ public class Ciws {
                 fixtureDef.density = 0.4f;
                 fixtureDef.friction = 0.1f;
                 fixtureDef.restitution = 0.8f;
-                body.createFixture(fixtureDef);
-                body.setLinearDamping(0.2f);
-                System.out.println(90f-angle);
+                body1.createFixture(fixtureDef);
+                body1.setLinearDamping(0.2f);
+                //System.out.println(90f-angle);
                /* if(mx < 237){
                     mx = 237;
                 }*/
-                if(angle > 45){
-                    float adiff;
-                    adiff = (float) (angle - 45);
-                    System.out.println("angle :" + angle + "adiff:" + adiff);
+                bodies.put(body1,"bullet");
+
+                if(angle < 38){
+                    angle = 38f;
                 }
                 yk = (mx) * (float) Math.tan( Math.toRadians(angle)) ;
+                if(event.x() < 300){
+                    body1.applyLinearImpulse( new Vec2(  yk+30f,mx)  , body.getPosition() );
+                }else{
+                    body1.applyLinearImpulse( new Vec2(  yk,mx)  , body.getPosition() );
+                }
 
-                body.applyLinearImpulse( new Vec2( mx, yk)  , body.getPosition() );
 
               //  body.applyLinearImpulse( new Vec2(50f , 80f)  , body.getPosition() );
 
@@ -177,7 +189,8 @@ public class Ciws {
 
         sprite.layer().setTranslation( body.getPosition().x / Play1.M_PER_PIXEL  ,
                 body.getPosition().y / Play1.M_PER_PIXEL );
-        sprite.layer().setRotation(((float) angle / 30f) - 2.5f);
+
+        sprite.layer().setRotation(((float) angle / 30f)*0.9f - 2.5f);
         //sprite.layer().setRotation(( (float) angle / 30f) - 2.5f);
 
     }
@@ -185,6 +198,9 @@ public class Ciws {
     public String getInfo(){
         return String.valueOf(layer().rotation());
 
+    }
+    public Body getBody(){
+        return this.body;
     }
 
 

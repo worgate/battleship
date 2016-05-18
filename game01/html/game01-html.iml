@@ -21,8 +21,8 @@
     <orderEntry type="library" name="Maven: com.googlecode.playn:playn-html:1.9" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.playn:playn-core:sources:1.9" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.playn:playn-webgl:1.9" level="project" />
-    <orderEntry type="library" name="Maven: com.google.gwt:gwt-user:2.6.1" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.playn:playn-webgl:sources:1.9" level="project" />
+    <orderEntry type="library" name="Maven: com.google.gwt:gwt-user:2.6.1" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:1.0.0.GA" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:sources:1.0.0.GA" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20090211" level="project" />
