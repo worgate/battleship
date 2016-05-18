@@ -8,12 +8,12 @@ import tripleplay.game.ScreenStack;
 
 public class HomeScreen extends Screen {
     private ScreenStack ss;
-
+    /*
     private Play1 play1;
     private Story1 story1;
     private Tutorials tutorials;
     private Ranking rankings;
-    private SelectLevel selectLevel;
+    private SelectLevel selectLevel;*/
 
     private ImageLayer bg;
     private Image bgImage;
@@ -36,11 +36,11 @@ public class HomeScreen extends Screen {
     public HomeScreen(final ScreenStack ss){
         this.ss = ss;
 
-        this.story1 = new Story1(ss);
+       /* this.story1 = new Story1(ss);
         this.tutorials = new Tutorials(ss);
         this.rankings = new Ranking(ss);
         this.selectLevel = new SelectLevel(ss);
-        this.play1 = new Play1(ss);
+        this.play1 = new Play1(ss);*/
 
         System.out.println("Home Screen");
         System.out.println( ss.size() );
@@ -73,23 +73,16 @@ public class HomeScreen extends Screen {
         exitButton.setSize(200,30);
 
 
-        keyboard().setListener(new Keyboard.Adapter(){
-            @Override
-            public void onKeyUp(Keyboard.Event event) {
-                if(event.key() == Key.ENTER ){
-                    ss.push(new Story3(ss));
-                }
-            }
-        });
-        
 
         startButton.addListener(new Mouse.LayerAdapter(){
         @Override
         public void onMouseUp(Mouse.ButtonEvent event){
-                    ss.push(play1);
+                    ss.push(new Play1(ss));
             }
         });
 
+
+        /*
         tutorialButton.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event){
@@ -116,7 +109,7 @@ public class HomeScreen extends Screen {
             }
         });
 
-
+        */
     }
 
     @Override
@@ -124,7 +117,7 @@ public class HomeScreen extends Screen {
         super.wasShown();
         this.layer.add(bg);
         this.layer.add(startButton);
-        this.layer.add(tutorialButton);
+       this.layer.add(tutorialButton);
         this.layer.add(rankingButton);
         this.layer.add(selectButton);
         this.layer.add(exitButton);
