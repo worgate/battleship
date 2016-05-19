@@ -9,11 +9,16 @@ import playn.core.util.Clock;
 import sprite.Sprite;
 import sprite.SpriteLoader;
 import sut.game01.core.Play1;
+import tripleplay.game.Screen;
+
 
 import java.util.HashMap;
 
+import static playn.core.PlayN.assets;
+import static playn.core.PlayN.graphics;
 
-public class Ciws {
+
+public class Ciws extends Screen {
     private Sprite sprite;
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
@@ -38,10 +43,12 @@ public class Ciws {
     private int offset = 8;
 
 
-
-    public Ciws(final World world,final float x , final float y, final HashMap<Body,String> bodies){
+    public Ciws(final World world,final float x , final float y, final HashMap<Body,String> bodies ) {
         this.x = x;
         this.y = y;
+
+
+
 
         sprite = SpriteLoader.getSprite("images/ciws.json");
         sprite.addCallback(new Callback<Sprite>() {
@@ -99,10 +106,7 @@ public class Ciws {
 
                 bodyDef.position = new Vec2( (x) / 26.666667f , (y) / 26.666667f);
                 Body body1 = world.createBody(bodyDef);
-                /*
-                bodies.put(body, "test_" + i);
-                i++;
-                */
+
                 CircleShape shape = new CircleShape();
                 shape.setRadius(0.05f);
 
@@ -113,10 +117,8 @@ public class Ciws {
                 fixtureDef.restitution = 0.8f;
                 body1.createFixture(fixtureDef);
                 body1.setLinearDamping(0.2f);
-                //System.out.println(90f-angle);
-               /* if(mx < 237){
-                    mx = 237;
-                }*/
+
+
                 bodies.put(body1,"bullet");
 
                 if(angle < 38){
@@ -125,6 +127,7 @@ public class Ciws {
                 yk = (mx) * (float) Math.tan( Math.toRadians(angle)) ;
                 if(event.x() < 300){
                     body1.applyLinearImpulse( new Vec2(  yk+30f,mx)  , body.getPosition() );
+                    Play1.shootOut();
                 }else{
                     body1.applyLinearImpulse( new Vec2(  yk,mx)  , body.getPosition() );
                 }
@@ -184,6 +187,8 @@ public class Ciws {
 
     }
 
+
+
     public void paint(Clock clock) {
         if (!hasLoaded){ return;}
 
@@ -201,6 +206,10 @@ public class Ciws {
     }
     public Body getBody(){
         return this.body;
+    }
+
+    public float getDiffY(){
+        return diffY;
     }
 
 

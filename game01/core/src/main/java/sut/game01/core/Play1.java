@@ -1,4 +1,5 @@
 package sut.game01.core;
+import characters.Bullet;
 import characters.Ciws;
 import characters.Mario;
 import org.jbox2d.callbacks.ContactImpulse;
@@ -51,15 +52,21 @@ public class Play1 extends Screen{
     private  Mario mario;
     private Ciws ciws;
 
+    Bullet bullet;
+
     Image playbg;
     ImageLayer bglayer;
 
     Image ship;
     ImageLayer shipL;
+
+    Image sky;
+    ImageLayer skyL;
+
     public Play1(final ScreenStack ss) {
         this.ss = ss;
         this.layer.clear();
-        //graphics().rootLayer().clear();
+
 
         ///==============================WORLD SETUP ========================///
         final Vec2 gravity = new Vec2(0.0f , 10.0f);
@@ -70,42 +77,16 @@ public class Play1 extends Screen{
 
         playbg = assets().getImage("/images/sea_bg.png");
         bglayer = graphics().createImageLayer(playbg);
-        //bglayer.setScale(0.9f);
-        //bglayer.setTranslation(480f/2,640f/2);
+
+        sky = assets().getImage("/images/sky.png");
+        skyL = graphics().createImageLayer(sky);
+
 
 
         ship = assets().getImage("/images/char/ship.png");
         shipL = graphics().createImageLayer(ship);
         shipL.setScale(0.9f);
         shipL.setTranslation(-250f,350f);
-
-        ///==============================OBJECT SETUP ========================///
-        /*final BodyDef bodyDef1 = new BodyDef();
-        bodyDef1.type = BodyType.STATIC;
-        bodyDef1.position = new Vec2(200f / 26.666667f,200f / 26.666667f);
-        Body box = world.createBody(bodyDef1);
-        bodies.put(box,"star");
-        CircleShape shape1 = new CircleShape();
-        shape1.setRadius(0.4f);
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape1;
-        box.createFixture(fixtureDef);
-        box.setLinearDamping(0.2f);
-
-        mario = new Mario(world,560f,400f);
-        this.layer.add(mario.layer());
-        bodies.put(mario,"mm");
-        */
-
-        /*
-        PlayN.mouse().setListener(new Mouse.Adapter(){
-            @Override
-            public void onMouseMove(Mouse.MotionEvent event) {
-                System.out.println("X:"+event.x() +" " + "Y:" + event.y());
-            }
-        });*/
-
-
 
         world.setContactListener(new ContactListener() {
             @Override
@@ -117,31 +98,12 @@ public class Play1 extends Screen{
                // System.out.println("B = " + bodies.get(b) + b.getPosition() );
                 if (bodies.get(a) == "CIWS" ||bodies.get(a) == "CIWS" ){
 
-                }else{
+                }else if (bodies.get(b) == "bullet"){
                     System.out.println("Hit!!!");
                     b.setActive(false);
+                    airplane.layer().setVisible(false);
 
                 }
-
-
-
-                //System.out.println(bodies.values());
-
-
-
-               // if (bodies.get(a) != null){
-
-                  //  if (bodies.get(b) == "star"){
-                   //     score += 10;
-                   // }
-                   /* if (bodies.get(a) == "static_0" || bodies.get(b) == "static_0"){
-                        score = 10;
-                    }*/
-                   // debugString = bodies.get(a) + " contact with " + bodies.get(b);
-
-                    // b.applyForce(new Vec2(200f,0),b.getPosition());
-                   // /*shoot */ b.applyLinearImpulse(new Vec2(5f,0),b.getPosition());
-
 
             }
 
@@ -156,7 +118,7 @@ public class Play1 extends Screen{
 
             }
         });
-
+        bullet = new Bullet(world,400f,200f);
 
         airplane = new Airplane(world,400f,20f);
         this.layer.add(airplane.layer());
@@ -166,6 +128,7 @@ public class Play1 extends Screen{
         backButton = graphics().createImageLayer(backImage);
         backButton.setTranslation(20,50);
 
+        
         /*Body ground = world.createBody(new BodyDef());
         EdgeShape groundShape = new EdgeShape();
         groundShape.set(new Vec2(0, height), new Vec2(width, height));
@@ -187,6 +150,33 @@ public class Play1 extends Screen{
         ground.createFixture(groundShape2, 0.0f);
         */
 
+        PlayN.mouse().setListener(new Mouse.Adapter(){
+
+            @Override
+            public void onMouseMove(Mouse.MotionEvent event) {
+                System.out.println("Shoot!");
+            }
+
+            private void layerAngleUpdate(float x1, float y1) {
+
+
+            }
+
+            @Override
+            public void onMouseDown(Mouse.ButtonEvent event) {
+
+
+
+
+
+                //  body.applyLinearImpulse( new Vec2(50f , 80f)  , body.getPosition() );
+
+            }
+
+
+        });
+
+
         backButton.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event){
@@ -203,16 +193,13 @@ public class Play1 extends Screen{
     @Override
     public void wasShown() {
         super.wasShown();
-        //air = new Airplane(world,5f,400f);
-       //this.layer.add(air.layer());
-
-        //graphics().rootLayer().add(bglayer);
         ciws = new Ciws(world,70f,420f,bodies);
-
+        this.layer.add(skyL);
         this.layer.add(ciws.layer());
         this.layer.add(backButton);
         this.layer.add(shipL);
         this.layer.add(bglayer);
+        this.layer.add(bullet.layer());
 
 
         if (showDebugDraw){
@@ -245,28 +232,26 @@ public class Play1 extends Screen{
         airplane.update(delta);
        //air.update(delta);
         ciws.update(delta);
+        bullet.update(delta);
     }
 
     @Override
     public void paint(Clock clock) {
         super.paint(clock);
-       // mario.paint(clock);
-        //air.paint(clock);
         airplane.paint(clock);
         ciws.paint(clock);
-
+        bullet.paint(clock);
         if (showDebugDraw){
             debugDraw.getCanvas().clear();
             world.drawDebugData();
-
             debugDraw.getCanvas().drawText( debugString,100f,100f);
-          //  debugDraw.getCanvas().drawText( air.getInfo(),100f,115f);
-          //  debugDraw.getCanvas().drawText( "Score: "+String.valueOf(score),100f,115f);
-
-
-
-
         }
 
     }
+    public static void shootOut(){
+
+    }
+
+
+
 }
