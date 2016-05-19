@@ -62,7 +62,7 @@ public class Play1 extends Screen{
 
     Image sky;
     ImageLayer skyL;
-
+    private  ArrayList<Bullet> bullets = new ArrayList<Bullet>();
     public Play1(final ScreenStack ss) {
         this.ss = ss;
         this.layer.clear();
@@ -94,16 +94,21 @@ public class Play1 extends Screen{
 
                 Body a = contact.getFixtureA().getBody();
                 Body b = contact.getFixtureB().getBody();
-                //System.out.println("A = " + bodies.get(a) + a.getPosition());
-               // System.out.println("B = " + bodies.get(b) + b.getPosition() );
-                if (bodies.get(a) == "CIWS" ||bodies.get(a) == "CIWS" ){
+                System.out.println("A = " + bodies.get(a) + a.getPosition());
+                 System.out.println("B = " + b.toString() + b.getPosition() );
 
-                }else if (bodies.get(b) == "bullet"){
+
+                /*else if (bodies.get(b) == "bullet"){
                     System.out.println("Hit!!!");
                     b.setActive(false);
                     airplane.layer().setVisible(false);
 
-                }
+                }*/
+
+
+
+
+
 
             }
 
@@ -118,7 +123,7 @@ public class Play1 extends Screen{
 
             }
         });
-        bullet = new Bullet(world,400f,200f);
+
 
         airplane = new Airplane(world,400f,20f);
         this.layer.add(airplane.layer());
@@ -129,52 +134,9 @@ public class Play1 extends Screen{
         backButton.setTranslation(20,50);
 
         
-        /*Body ground = world.createBody(new BodyDef());
-        EdgeShape groundShape = new EdgeShape();
-        groundShape.set(new Vec2(0, height), new Vec2(width, height));
-        ground.createFixture(groundShape, 0.0f);
-
-        Body ground2 = world.createBody(new BodyDef());
-        EdgeShape groundShape2 = new EdgeShape();
-        groundShape2.set(new Vec2(0, 0), new Vec2(width, 0));
-        ground.createFixture(groundShape2, 0.0f);
-
-        Body ground3 = world.createBody(new BodyDef());
-        EdgeShape groundShape3 = new EdgeShape();
-        groundShape2.set(new Vec2(0, 0), new Vec2(0, height));
-        ground.createFixture(groundShape2, 0.0f);
-
-        Body ground4 = world.createBody(new BodyDef());
-        EdgeShape groundShape4 = new EdgeShape();
-        groundShape2.set(new Vec2(width, 0), new Vec2(width, height));
-        ground.createFixture(groundShape2, 0.0f);
-        */
-
-        PlayN.mouse().setListener(new Mouse.Adapter(){
-
-            @Override
-            public void onMouseMove(Mouse.MotionEvent event) {
-                System.out.println("Shoot!");
-            }
-
-            private void layerAngleUpdate(float x1, float y1) {
-
-
-            }
-
-            @Override
-            public void onMouseDown(Mouse.ButtonEvent event) {
 
 
 
-
-
-                //  body.applyLinearImpulse( new Vec2(50f , 80f)  , body.getPosition() );
-
-            }
-
-
-        });
 
 
         backButton.addListener(new Mouse.LayerAdapter(){
@@ -193,13 +155,13 @@ public class Play1 extends Screen{
     @Override
     public void wasShown() {
         super.wasShown();
-        ciws = new Ciws(world,70f,420f,bodies);
+        ciws = new Ciws(world,70f,420f,bodies,bullets);
         this.layer.add(skyL);
         this.layer.add(ciws.layer());
         this.layer.add(backButton);
         this.layer.add(shipL);
         this.layer.add(bglayer);
-        this.layer.add(bullet.layer());
+
 
 
         if (showDebugDraw){
@@ -232,7 +194,11 @@ public class Play1 extends Screen{
         airplane.update(delta);
        //air.update(delta);
         ciws.update(delta);
-        bullet.update(delta);
+        for (int i = 0 ; i < bullets.size() ; i++){
+            this.layer.add(bullets.get(i).layer());
+            bullets.get(i).update(delta);
+        }
+
     }
 
     @Override
@@ -240,7 +206,10 @@ public class Play1 extends Screen{
         super.paint(clock);
         airplane.paint(clock);
         ciws.paint(clock);
-        bullet.paint(clock);
+        for (int i = 0 ; i < bullets.size() ; i++){
+            bullets.get(i).paint(clock);
+        }
+
         if (showDebugDraw){
             debugDraw.getCanvas().clear();
             world.drawDebugData();
@@ -248,7 +217,43 @@ public class Play1 extends Screen{
         }
 
     }
-    public static void shootOut(){
+    public static void shootOut(float yk, float mx, final World world, float x, float y,final ArrayList bullets){
+
+
+        bullets.add(new Bullet(world, x, y, yk, mx, bullets));
+
+
+       // bullets.add(new Bullet(world,x,y,yk,mx));
+
+
+
+        /*
+
+        //System.out.println("yto");
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyType.DYNAMIC;
+
+        bodyDef.position = new Vec2( (x) / 26.666667f , (y) / 26.666667f);
+        Body body1 = world.createBody(bodyDef);
+
+        CircleShape shape = new CircleShape();
+        shape.setRadius(0.05f);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 0.4f;
+        fixtureDef.friction = 0.1f;
+        fixtureDef.restitution = 0.8f;
+        body1.createFixture(fixtureDef);
+        body1.setLinearDamping(0.2f);
+        body1.applyLinearImpulse( new Vec2(  yk+30f,mx)  , body1.getPosition() );
+        */
+
+
+
+        //bodies.put(body1,"bullet");
+
+
 
     }
 

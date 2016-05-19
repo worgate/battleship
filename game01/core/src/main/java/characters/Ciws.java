@@ -12,6 +12,7 @@ import sut.game01.core.Play1;
 import tripleplay.game.Screen;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static playn.core.PlayN.assets;
@@ -32,7 +33,7 @@ public class Ciws extends Screen {
     private float yk;
     private float mx,my;
 
-
+    public static Play1 play1;
     public enum State{
         IDLE
     }
@@ -43,7 +44,7 @@ public class Ciws extends Screen {
     private int offset = 8;
 
 
-    public Ciws(final World world,final float x , final float y, final HashMap<Body,String> bodies ) {
+    public Ciws(final World world,final float x , final float y, final HashMap<Body,String> bodies , final ArrayList bullets) {
         this.x = x;
         this.y = y;
 
@@ -101,35 +102,18 @@ public class Ciws extends Screen {
 
             @Override
             public void onMouseDown(Mouse.ButtonEvent event) {
-                BodyDef bodyDef = new BodyDef();
-                bodyDef.type = BodyType.DYNAMIC;
 
-                bodyDef.position = new Vec2( (x) / 26.666667f , (y) / 26.666667f);
-                Body body1 = world.createBody(bodyDef);
-
-                CircleShape shape = new CircleShape();
-                shape.setRadius(0.05f);
-
-                FixtureDef fixtureDef = new FixtureDef();
-                fixtureDef.shape = shape;
-                fixtureDef.density = 0.4f;
-                fixtureDef.friction = 0.1f;
-                fixtureDef.restitution = 0.8f;
-                body1.createFixture(fixtureDef);
-                body1.setLinearDamping(0.2f);
-
-
-                bodies.put(body1,"bullet");
 
                 if(angle < 38){
                     angle = 38f;
                 }
                 yk = (mx) * (float) Math.tan( Math.toRadians(angle)) ;
                 if(event.x() < 300){
-                    body1.applyLinearImpulse( new Vec2(  yk+30f,mx)  , body.getPosition() );
-                    Play1.shootOut();
-                }else{
-                    body1.applyLinearImpulse( new Vec2(  yk,mx)  , body.getPosition() );
+                    Play1.shootOut(yk+30f,mx,world,x,y,bullets);
+                    //body1.applyLinearImpulse( new Vec2(  yk+30f,mx)  , body.getPosition() );
+
+                }else{Play1.shootOut(yk,mx,world,x,y,bullets);
+                    //body1.applyLinearImpulse( new Vec2(  yk,mx)  , body.getPosition() );
                 }
 
 

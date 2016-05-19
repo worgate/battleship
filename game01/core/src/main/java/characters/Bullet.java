@@ -10,6 +10,8 @@ import sprite.Sprite;
 import sprite.SpriteLoader;
 import sut.game01.core.Play1;
 
+import java.util.ArrayList;
+
 
 public class Bullet {
     private Sprite sprite;
@@ -25,17 +27,19 @@ public class Bullet {
 
     private  int e = 0;
     private int offset = 8;
-
-    public Bullet(final World world,final float x , final float y){
-
+    private float yk,mx = 0;
+    public Bullet(final World world,final float x , final float y,float yk,float mx,ArrayList bullets){
+        this.yk = yk;
+        this.mx = mx;
         sprite = SpriteLoader.getSprite("images/bullet.json");
         sprite.addCallback(new Callback<Sprite>() {
             @Override
             public void onSuccess(Sprite result) {
                 sprite.setSprite(spriteIndex);
-                sprite.layer().setScale(0.8f);
+                sprite.layer().setScale(0.1f);
                 sprite.layer().setOrigin(sprite.width() / 2f,
                         sprite.height() / 2f);
+                //sprite.layer().setSize(10,10);
                 sprite.layer().setTranslation(x, y );
                 body = initPhysicsBody(world,
                         Play1.M_PER_PIXEL * x,
@@ -73,7 +77,7 @@ public class Bullet {
         fixtureDef.restitution = 0.8f;
         body.createFixture(fixtureDef);
         body.setLinearDamping(0.2f);
-
+        body.applyLinearImpulse( new Vec2(  yk+30f,mx)  , body.getPosition() );
 
         return  body;
     }
