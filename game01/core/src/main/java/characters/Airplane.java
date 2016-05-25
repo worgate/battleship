@@ -87,7 +87,7 @@ public class Airplane {
                 }else if (angle > 84f){
                     angle = 84f;
                 }
-                System.out.println("X :" + x1 + "   Y :" + y1 + "Degree " + angle);
+               // System.out.println("X :" + x1 + "   Y :" + y1 + "Degree " + angle);
 
                // System.out.println(angle);
             }

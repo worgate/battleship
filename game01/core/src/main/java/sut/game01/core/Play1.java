@@ -6,14 +6,14 @@ import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.callbacks.DebugDraw;
 import org.jbox2d.collision.Manifold;
-import org.jbox2d.collision.shapes.CircleShape;
-import org.jbox2d.collision.shapes.EdgeShape;
-import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.common.Timer;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.contacts.Contact;
 import playn.core.*;
+import playn.core.util.Callback;
 import playn.core.util.Clock;
+import playn.core.util.TextBlock;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
 import characters.Airplane;
@@ -29,7 +29,7 @@ public class Play1 extends Screen{
     private  final ScreenStack ss;
     private  ImageLayer bg;
     private  ImageLayer backButton;
-    private  Airplane airplane;
+    //private  Airplane airplane;
 
 
     public static float M_PER_PIXEL = 1 / 26.6666667f;
@@ -62,6 +62,19 @@ public class Play1 extends Screen{
 
     Image sky;
     ImageLayer skyL;
+    private float x,y;
+    private float yk;
+    private float mx,my;
+    float angle;
+    private  float diffY , diffX;
+    float ciwsX = 70f,ciwsY = 420f;
+
+    int shoot = 0;
+    int ammo = 50, maga= 50;
+
+
+
+
     private  ArrayList<Bullet> bullets = new ArrayList<Bullet>();
     public Play1(final ScreenStack ss) {
         this.ss = ss;
@@ -82,12 +95,11 @@ public class Play1 extends Screen{
         skyL = graphics().createImageLayer(sky);
 
 
-
         ship = assets().getImage("/images/char/ship.png");
         shipL = graphics().createImageLayer(ship);
         shipL.setScale(0.9f);
         shipL.setTranslation(-250f,350f);
-
+        //Contact
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
@@ -95,7 +107,7 @@ public class Play1 extends Screen{
                 Body a = contact.getFixtureA().getBody();
                 Body b = contact.getFixtureB().getBody();
                 System.out.println("A = " + bodies.get(a) + a.getPosition());
-                 System.out.println("B = " + b.toString() + b.getPosition() );
+                System.out.println("B = " + bodies.get(b) + b.getPosition() );
 
 
                 /*else if (bodies.get(b) == "bullet"){
@@ -104,11 +116,6 @@ public class Play1 extends Screen{
                     airplane.layer().setVisible(false);
 
                 }*/
-
-
-
-
-
 
             }
 
@@ -125,19 +132,61 @@ public class Play1 extends Screen{
         });
 
 
-        airplane = new Airplane(world,400f,20f);
-        this.layer.add(airplane.layer());
+        ciws = new Ciws(world,ciwsX,ciwsY,bodies);
+        //Mouse Move
+        mouse().setListener(new Mouse.Adapter(){
+            @Override
+            public void onMouseMove(Mouse.MotionEvent event) {
+
+                mx = event.x() ;
+                my = event.y() ;
+
+                diffY = Math.abs(mx - ciwsX) ;
+                diffX = Math.abs(my - ciwsY);
+                angle = (float) Math.toDegrees(Math.atan(diffY / diffX));
+                if (angle < 38f){
+                    angle = 38f;
+                }else if (angle > 86f){
+                    angle = 86f;
+                }
+               // System.out.println("MX : " + mx + " MY : " + my + "Angle : " + angle);
+
+                ciws.layerAngleUpdate(event.x() , event.y() ,angle );
+            }
+
+            @Override
+            public void onMouseDown(Mouse.ButtonEvent event) {
+                if(angle < 38){ angle = 38;  };
+                yk = mx * (float) Math.tan(Math.toRadians(angle));
+
+                if (ammo >0){
+                    ammo = ammo - 1;
+                    if (mx < 300){
+                        shootOut(yk+30f , mx ,world,x,y);
+                    }else {
+                        shootOut(yk , mx ,world,x,y);
+                    }
+                }
+
+            }
+        });
+
+        keyboard().setListener(new Keyboard.Adapter(){
+            @Override
+            public void onKeyUp(Keyboard.Event event) {
+                if (event.key() == Key.K){
+                    ammo = maga;
+                }
+            }
+        });
+
+
+
 
 
         Image backImage = assets().getImage("Images/back.png");
         backButton = graphics().createImageLayer(backImage);
         backButton.setTranslation(20,50);
-
-        
-
-
-
-
 
         backButton.addListener(new Mouse.LayerAdapter(){
             @Override
@@ -146,16 +195,15 @@ public class Play1 extends Screen{
                 ss.remove(ss.top());
                 ss.push(new HomeScreen(ss));
 
-
-
             }
         });
     }
 
+
     @Override
     public void wasShown() {
         super.wasShown();
-        ciws = new Ciws(world,70f,420f,bodies,bullets);
+
         this.layer.add(skyL);
         this.layer.add(ciws.layer());
         this.layer.add(backButton);
@@ -175,9 +223,7 @@ public class Play1 extends Screen{
             debugDraw.setStrokeAlpha(150);
             debugDraw.setFillAlpha(75);
             debugDraw.setStrokeWidth(2.0f);
-            debugDraw.setFlags(DebugDraw.e_shapeBit |
-                    DebugDraw.e_jointBit |
-                    DebugDraw.e_aabbBit);
+
             debugDraw.setCamera(0, 0, 1f / Play1.M_PER_PIXEL);
             world.setDebugDraw(debugDraw);
 
@@ -191,67 +237,44 @@ public class Play1 extends Screen{
     public void update(int delta){
         super.update(delta);
         world.step(0.033f,10,10);
-        airplane.update(delta);
-       //air.update(delta);
         ciws.update(delta);
-        for (int i = 0 ; i < bullets.size() ; i++){
-            this.layer.add(bullets.get(i).layer());
-            bullets.get(i).update(delta);
+        for (int o = 0 ; o < bullets.size() ; o++){
+            bullets.get(o).update(delta);
         }
+
 
     }
 
     @Override
     public void paint(Clock clock) {
         super.paint(clock);
-        airplane.paint(clock);
         ciws.paint(clock);
-        for (int i = 0 ; i < bullets.size() ; i++){
-            bullets.get(i).paint(clock);
+
+        for (int o = 0 ; o < bullets.size() ; o++){
+            bullets.get(o).paint(clock);
         }
 
         if (showDebugDraw){
             debugDraw.getCanvas().clear();
             world.drawDebugData();
-            debugDraw.getCanvas().drawText( debugString,100f,100f);
+            debugDraw.getCanvas().setFillColor(Color.rgb(255,255,255));
+            debugDraw.getCanvas().drawText(String.valueOf(ammo) + " / " + String.valueOf(maga),100f,100f);
+            if (ammo == 0 ){
+                    debugDraw.getCanvas().drawText("Out of ammo",100f,120f);
+            }
+
         }
 
     }
-    public static void shootOut(float yk, float mx, final World world, float x, float y,final ArrayList bullets){
+    public  void shootOut(float yk, float mx, final World world, float x, float y) {
+        bullets.add(new Bullet(world, ciwsX, ciwsY, yk, mx,this.bodies));
 
-
-        bullets.add(new Bullet(world, x, y, yk, mx, bullets));
-
-
-       // bullets.add(new Bullet(world,x,y,yk,mx));
-
-
-
-        /*
-
-        //System.out.println("yto");
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyType.DYNAMIC;
-
-        bodyDef.position = new Vec2( (x) / 26.666667f , (y) / 26.666667f);
-        Body body1 = world.createBody(bodyDef);
-
-        CircleShape shape = new CircleShape();
-        shape.setRadius(0.05f);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 0.4f;
-        fixtureDef.friction = 0.1f;
-        fixtureDef.restitution = 0.8f;
-        body1.createFixture(fixtureDef);
-        body1.setLinearDamping(0.2f);
-        body1.applyLinearImpulse( new Vec2(  yk+30f,mx)  , body1.getPosition() );
-        */
-
-
-
-        //bodies.put(body1,"bullet");
+        for (int o = 0 ; o < bullets.size() ; o++){
+                this.layer.add(bullets.get(o).layer());
+                bodies.put(bullets.get(o),"Bullet");
+        }
+        //bullets.add(new Bullet(world, ciwsX, ciwsY, yk, mx,bodies));
+       // bodies.put(new Bullet(world, ciwsX, ciwsY, yk, mx),"bullet");
 
 
 

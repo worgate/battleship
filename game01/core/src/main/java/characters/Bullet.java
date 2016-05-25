@@ -11,6 +11,7 @@ import sprite.SpriteLoader;
 import sut.game01.core.Play1;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class Bullet {
@@ -28,7 +29,7 @@ public class Bullet {
     private  int e = 0;
     private int offset = 8;
     private float yk,mx = 0;
-    public Bullet(final World world,final float x , final float y,float yk,float mx,ArrayList bullets){
+    public Bullet(final World world,final float x , final float y,float yk,float mx,final HashMap<Body,String> bodies){
         this.yk = yk;
         this.mx = mx;
         sprite = SpriteLoader.getSprite("images/bullet.json");
@@ -45,6 +46,7 @@ public class Bullet {
                         Play1.M_PER_PIXEL * x,
                         Play1.M_PER_PIXEL * y);
                 hasLoaded = true;
+                bodies.put(body,"Bullet");
             }
 
             @Override
@@ -107,9 +109,11 @@ public class Bullet {
                 body.getPosition().x / Play1.M_PER_PIXEL  ,
                 body.getPosition().y / Play1.M_PER_PIXEL );
 
-
-
     }
+    public Body getBody(){
+        return this.body;
+    }
+
 
 
 
