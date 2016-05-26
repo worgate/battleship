@@ -1,5 +1,4 @@
 package characters;
-import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
@@ -9,59 +8,48 @@ import playn.core.util.Clock;
 import sprite.Sprite;
 import sprite.SpriteLoader;
 import sut.game01.core.Play1;
-import tripleplay.game.Screen;
 
-
-import java.util.ArrayList;
 import java.util.HashMap;
 
 
-
-public class Ciws extends Screen {
+public class Jet {
     private Sprite sprite;
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
-    private  float diffY , diffX;
-    private double angle;
     private Boolean contacted;
     private int contactCheck;
-    Body body;
+    public Body body;
     Body other;
-    private float x,y;
-    private float yk;
-    private float mx,my;
 
-    public static Play1 play1;
+
     public enum State{
-        IDLE
+        MAX , MID , MIN,DESTROY
     }
 
-    private State state = State.IDLE;
-
+    private State state = State.MAX;
     private  int e = 0;
     private int offset = 8;
 
+    private  int health = 100;
 
-    public Ciws(final World world,final float x , final float y, final HashMap<Body,String> bodies) {
-        this.x = x;
-        this.y = y;
 
-        sprite = SpriteLoader.getSprite("images/ciws.json");
+    public Jet(final World world,final float x , final float y,final HashMap<Body,String> bodies){
+
+        sprite = SpriteLoader.getSprite("images/jet.json");
         sprite.addCallback(new Callback<Sprite>() {
             @Override
             public void onSuccess(Sprite result) {
                 sprite.setSprite(spriteIndex);
-
                 sprite.layer().setOrigin(sprite.width() / 2f,
                         sprite.height() / 2f);
-                sprite.layer().setSize(500,500);
+                sprite.layer().setSize(600/2,200/2);
                 sprite.layer().setScale(0.2f,0.2f);
                 sprite.layer().setTranslation(x, y );
                 body = initPhysicsBody(world,
                         Play1.M_PER_PIXEL * x,
                         Play1.M_PER_PIXEL * y);
                 hasLoaded = true;
-                bodies.put(body,"CIWS");
+                bodies.put(body,"Jet");
             }
 
             @Override
@@ -72,13 +60,13 @@ public class Ciws extends Screen {
 
 
 
-
     }
 
     public Layer layer(){
+
+
         return sprite.layer();
     }
-
     private Body initPhysicsBody(World world,float x , float y){
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyType.STATIC;
@@ -86,61 +74,67 @@ public class Ciws extends Screen {
         Body body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(      3 * Play1.M_PER_PIXEL , 3* Play1.M_PER_PIXEL );
+        //shape.setAsBox( 3 , 5 );
+        shape.setAsBox( (sprite.layer().width()) * Play1.M_PER_PIXEL   /9 , (10) * Play1.M_PER_PIXEL );
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
+        fixtureDef.density = 0.4f;
+        fixtureDef.friction = 0.1f;
         body.createFixture(fixtureDef);
+        //body.setGravityScale(0);
+        body.setLinearDamping(0.2f);
         body.setTransform(new Vec2(x, y), 0f);
-
         return  body;
     }
 
     public void update(int delta){
+        // System.out.println("value = " + (((float) angle / 30f) - 2.8f )) ;
         if(hasLoaded == false) return;
-
-        e = e + delta;
-        if(e > 150){
-            switch (state){
-                case IDLE: offset = 0; break;
-            }
-            spriteIndex = offset + ((spriteIndex +1) % 2);
-            sprite.setSprite(spriteIndex);
-            e = 0;
+        if (health > 80){
+            state = State.MAX;
+        }else if (health > 60){
+            state = State.MID;
+        }else  if (health > 0){
+            state = State.MIN;
+        }else {
+            state =State.DESTROY;
         }
 
+        switch (state){
+            case MAX:
+                sprite.setSprite(0); break;
+            case MID:
+                sprite.setSprite(1); break;
+            case MIN:
+               // body.setGravityScale(+10f);
+                sprite.setSprite(2); break;
+            case DESTROY:
+                body.setActive(false);
+                sprite.layer().setVisible(false);
+                sprite.setSprite(3); break;
+        }
 
+    }
+
+
+    public int getAttack(int force){
+        this.health = health - force;
+        if (health<=0){ health = 0;}
+        if (health <= 0){
+            return 10;
+        }else return  0;
 
     }
 
     public void paint(Clock clock) {
         if (!hasLoaded){ return;}
-        sprite.layer().setTranslation( body.getPosition().x / Play1.M_PER_PIXEL  ,
-                body.getPosition().y / Play1.M_PER_PIXEL );
-        //System.out.println(angle);
-        sprite.layer().setRotation(((float) angle / 30f)*0.9f - 2.5f);
 
-
+        sprite.layer().setTranslation(
+                (body.getPosition().x +1.2f ) / Play1.M_PER_PIXEL  ,
+                (body.getPosition().y + 0.5f)  / Play1.M_PER_PIXEL );
 
     }
-
-    public Body getBody(){
-        return this.body;
-    }
-
-
-    public void layerAngleUpdate(float x1, float y1,float angle) {
-        mx = y1 ;
-        my = x1 ;
-        this.angle = angle;
-
-    }
-
-
-
-
-
-
 
 
 }

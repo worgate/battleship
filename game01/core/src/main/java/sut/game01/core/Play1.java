@@ -1,7 +1,5 @@
 package sut.game01.core;
-import characters.Bullet;
-import characters.Ciws;
-import characters.Mario;
+import characters.*;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.callbacks.DebugDraw;
@@ -16,7 +14,6 @@ import playn.core.util.Clock;
 import playn.core.util.TextBlock;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
-import characters.Airplane;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,17 +46,12 @@ public class Play1 extends Screen{
     private String debugString = "Hello";
     private  int score = 0 ;
 
-    private  Mario mario;
     private Ciws ciws;
-
-    Bullet bullet;
 
     Image playbg;
     ImageLayer bglayer;
-
     Image ship;
     ImageLayer shipL;
-
     Image sky;
     ImageLayer skyL;
     private float x,y;
@@ -71,7 +63,10 @@ public class Play1 extends Screen{
 
     int shoot = 0;
     int ammo = 50, maga= 50;
+    int point = 0;
+    Jet jet ;
 
+    private  ArrayList<Jet> jetPack = new ArrayList<Jet>();
 
 
 
@@ -87,14 +82,10 @@ public class Play1 extends Screen{
         world.setWarmStarting(true);
         world.setAutoClearForces(true);
 
-
         playbg = assets().getImage("/images/sea_bg.png");
         bglayer = graphics().createImageLayer(playbg);
-
         sky = assets().getImage("/images/sky.png");
         skyL = graphics().createImageLayer(sky);
-
-
         ship = assets().getImage("/images/char/ship.png");
         shipL = graphics().createImageLayer(ship);
         shipL.setScale(0.9f);
@@ -108,14 +99,17 @@ public class Play1 extends Screen{
                 Body b = contact.getFixtureB().getBody();
                 System.out.println("A = " + bodies.get(a) + a.getPosition());
                 System.out.println("B = " + bodies.get(b) + b.getPosition() );
+                if (bodies.get(a) == "Jet"){
+
+                    for (int o = 0 ; o < jetPack.size() ; o++){
+                            if (jetPack.get(0).body == contact.getFixtureA().getBody()){
+                                System.out.println("found");
+                                    point = jetPack.get(0).getAttack(10);
+                            }
+                    }
+                }
 
 
-                /*else if (bodies.get(b) == "bullet"){
-                    System.out.println("Hit!!!");
-                    b.setActive(false);
-                    airplane.layer().setVisible(false);
-
-                }*/
 
             }
 
@@ -134,6 +128,13 @@ public class Play1 extends Screen{
 
         ciws = new Ciws(world,ciwsX,ciwsY,bodies);
         //Mouse Move
+        jetPack.add(new Jet(world,500,50,bodies));
+
+        /*for (int o = 0 ; o < bullets.size() ; o++){
+            this.layer.add(bullets.get(o).layer());
+            bodies.put(bullets.get(o),"Bullet");
+        }*/
+
         mouse().setListener(new Mouse.Adapter(){
             @Override
             public void onMouseMove(Mouse.MotionEvent event) {
@@ -170,7 +171,6 @@ public class Play1 extends Screen{
 
             }
         });
-
         keyboard().setListener(new Keyboard.Adapter(){
             @Override
             public void onKeyUp(Keyboard.Event event) {
@@ -179,10 +179,6 @@ public class Play1 extends Screen{
                 }
             }
         });
-
-
-
-
 
         Image backImage = assets().getImage("Images/back.png");
         backButton = graphics().createImageLayer(backImage);
@@ -200,12 +196,15 @@ public class Play1 extends Screen{
     }
 
 
+
     @Override
     public void wasShown() {
         super.wasShown();
 
         this.layer.add(skyL);
         this.layer.add(ciws.layer());
+
+        this.layer.add(jetPack.get(0).layer());
         this.layer.add(backButton);
         this.layer.add(shipL);
         this.layer.add(bglayer);
@@ -223,7 +222,7 @@ public class Play1 extends Screen{
             debugDraw.setStrokeAlpha(150);
             debugDraw.setFillAlpha(75);
             debugDraw.setStrokeWidth(2.0f);
-
+            //debugDraw.setFlags( DebugDraw.e_shapeBit|DebugDraw.e_jointBit |DebugDraw.e_aabbBit);
             debugDraw.setCamera(0, 0, 1f / Play1.M_PER_PIXEL);
             world.setDebugDraw(debugDraw);
 
@@ -238,8 +237,14 @@ public class Play1 extends Screen{
         super.update(delta);
         world.step(0.033f,10,10);
         ciws.update(delta);
+
+
         for (int o = 0 ; o < bullets.size() ; o++){
             bullets.get(o).update(delta);
+        }
+
+        for (int o = 0 ; o < jetPack.size() ; o++){
+            jetPack.get(o).update(delta);
         }
 
 
@@ -253,14 +258,18 @@ public class Play1 extends Screen{
         for (int o = 0 ; o < bullets.size() ; o++){
             bullets.get(o).paint(clock);
         }
+        for (int o = 0 ; o < jetPack.size() ; o++){
+            jetPack.get(o).paint(clock);
+        }
 
         if (showDebugDraw){
             debugDraw.getCanvas().clear();
             world.drawDebugData();
             debugDraw.getCanvas().setFillColor(Color.rgb(255,255,255));
-            debugDraw.getCanvas().drawText(String.valueOf(ammo) + " / " + String.valueOf(maga),100f,100f);
+            debugDraw.getCanvas().drawText("Ammo :"+ String.valueOf(ammo) + " / " + String.valueOf(maga),100f,40f);
+            debugDraw.getCanvas().drawText("Point :"+ String.valueOf(point),100f,30f);
             if (ammo == 0 ){
-                    debugDraw.getCanvas().drawText("Out of ammo",100f,120f);
+                    debugDraw.getCanvas().drawText("Out of ammo",100f,50f);
             }
 
         }
@@ -273,10 +282,6 @@ public class Play1 extends Screen{
                 this.layer.add(bullets.get(o).layer());
                 bodies.put(bullets.get(o),"Bullet");
         }
-        //bullets.add(new Bullet(world, ciwsX, ciwsY, yk, mx,bodies));
-       // bodies.put(new Bullet(world, ciwsX, ciwsY, yk, mx),"bullet");
-
-
 
     }
 
