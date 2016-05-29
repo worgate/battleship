@@ -1,6 +1,7 @@
 package sut.game01.core;
 import static playn.core.PlayN.*;
 
+import characters.Profile;
 import playn.core.*;
 import playn.core.util.Clock;
 import tripleplay.game.Screen;
@@ -33,14 +34,8 @@ public class HomeScreen extends Screen {
     //private ImageLayer tuButton;
     //private Image tu;
 
-    public HomeScreen(final ScreenStack ss){
+    public HomeScreen(final ScreenStack ss,final  Profile profile){
         this.ss = ss;
-
-       /* this.story1 = new Story1(ss);
-        this.tutorials = new Tutorials(ss);
-        this.rankings = new Ranking(ss);
-        this.selectLevel = new SelectLevel(ss);
-        this.play1 = new Play1(ss);*/
 
         System.out.println("Home Screen");
         System.out.println( ss.size() );
@@ -73,43 +68,25 @@ public class HomeScreen extends Screen {
         exitButton.setSize(200,30);
 
 
-
         startButton.addListener(new Mouse.LayerAdapter(){
         @Override
         public void onMouseUp(Mouse.ButtonEvent event){
-                    ss.push(new Play1(ss));
+                    ss.push(new Play1(ss,profile));
             }
         });
 
-
-        /*
-        tutorialButton.addListener(new Mouse.LayerAdapter(){
-            @Override
-            public void onMouseUp(Mouse.ButtonEvent event){
-                ss.push(tutorials);
-            }
-        });
-
-        rankingButton.addListener(new Mouse.LayerAdapter(){
-            @Override
-            public void onMouseUp(Mouse.ButtonEvent event){
-                ss.push(rankings);
-            }
-        });
         selectButton.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event){
-                ss.push(selectLevel);
-            }
-        });
-        exitButton.addListener(new Mouse.LayerAdapter(){
-            @Override
-            public void onMouseUp(Mouse.ButtonEvent event) {
-                System.exit(0);
+                ss.push(new SelectLevel(ss,profile));
             }
         });
 
-        */
+
+
+
+
+
     }
 
     @Override

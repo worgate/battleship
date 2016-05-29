@@ -1,6 +1,7 @@
 package sut.game01.core;
 
 
+import characters.Profile;
 import tripleplay.game.ScreenStack;
 import playn.core.util.Clock;
 import playn.core.Game;
@@ -18,7 +19,8 @@ public class MyGame extends Game.Default {
 
   @Override
   public void init() {
-      ss.push(new HomeScreen(ss));
+      final Profile profile = new Profile(200,1,1,1,1,1);
+      ss.push(new HomeScreen(ss,profile));
 
   }
 

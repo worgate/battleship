@@ -79,8 +79,7 @@ public class Bullet {
         fixtureDef.restitution = 0.8f;
         body.createFixture(fixtureDef);
         body.setLinearDamping(0.2f);
-        body.applyLinearImpulse( new Vec2(  yk+30f,mx)  , body.getPosition() );
-
+        body.applyLinearImpulse( new Vec2(  (yk+30f),mx)  , body.getPosition() );
         return  body;
     }
 

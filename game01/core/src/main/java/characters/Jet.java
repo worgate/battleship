@@ -32,9 +32,10 @@ public class Jet {
 
     private  int health = 100;
 
-
+    float x,y;
     public Jet(final World world,final float x , final float y,final HashMap<Body,String> bodies){
-
+        this.x = x;
+        this.y = y;
         sprite = SpriteLoader.getSprite("images/jet.json");
         sprite.addCallback(new Callback<Sprite>() {
             @Override
@@ -69,7 +70,7 @@ public class Jet {
     }
     private Body initPhysicsBody(World world,float x , float y){
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyType.STATIC;
+        bodyDef.type = BodyType.DYNAMIC;
         bodyDef.position = new Vec2(0,0);
         Body body = world.createBody(bodyDef);
 
@@ -82,13 +83,17 @@ public class Jet {
         fixtureDef.density = 0.4f;
         fixtureDef.friction = 0.1f;
         body.createFixture(fixtureDef);
-        //body.setGravityScale(0);
-        body.setLinearDamping(0.2f);
+        body.setGravityScale(0f);
+        //body.setLinearDamping(0f);
         body.setTransform(new Vec2(x, y), 0f);
+        body.applyForce(new Vec2(-20f, 0), body.getPosition());
+
+
         return  body;
     }
 
     public void update(int delta){
+
         // System.out.println("value = " + (((float) angle / 30f) - 2.8f )) ;
         if(hasLoaded == false) return;
         if (health > 80){
@@ -107,13 +112,18 @@ public class Jet {
             case MID:
                 sprite.setSprite(1); break;
             case MIN:
-               // body.setGravityScale(+10f);
+               // body.setGravityScale(1f);
                 sprite.setSprite(2); break;
             case DESTROY:
                 body.setActive(false);
                 sprite.layer().setVisible(false);
                 sprite.setSprite(3); break;
         }
+
+        if ((int)(body.getPosition().x / Play1.M_PER_PIXEL ) == 120){
+            System.out.println("drop the bomb");
+        }
+
 
     }
 
@@ -133,7 +143,6 @@ public class Jet {
         sprite.layer().setTranslation(
                 (body.getPosition().x +1.2f ) / Play1.M_PER_PIXEL  ,
                 (body.getPosition().y + 0.5f)  / Play1.M_PER_PIXEL );
-
     }
 
 

@@ -1,0 +1,8 @@
+{
+  "urls": ["images/char/skin.png"],
+  "sprites": [
+    {"id": "lv1", "url": 0, "x": 0,   "y": 0, "w": 500, "h": 200},
+    {"id": "lv2", "url": 0, "x": 500,   "y": 0, "w": 500, "h": 200}
+
+  ]
+}

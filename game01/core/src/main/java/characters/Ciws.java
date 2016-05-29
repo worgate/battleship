@@ -72,7 +72,6 @@ public class Ciws extends Screen {
 
 
 
-
     }
 
     public Layer layer(){
@@ -86,7 +85,7 @@ public class Ciws extends Screen {
         Body body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(      3 * Play1.M_PER_PIXEL , 3* Play1.M_PER_PIXEL );
+        shape.setAsBox(      100* Play1.M_PER_PIXEL , 20* Play1.M_PER_PIXEL );
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
