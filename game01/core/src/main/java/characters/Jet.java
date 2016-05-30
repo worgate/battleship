@@ -19,8 +19,6 @@ public class Jet {
     private Boolean contacted;
     private int contactCheck;
     public Body body;
-    Body other;
-
 
     public enum State{
         MAX , MID , MIN,DESTROY
@@ -33,7 +31,9 @@ public class Jet {
     private  int health = 100;
 
     float x,y;
-    public Jet(final World world,final float x , final float y,final HashMap<Body,String> bodies){
+    float xChange,yChange;
+    public Jet(final World world,final float x , final float y,final HashMap<Body,String> bodies,int health){
+        this.health = health;
         this.x = x;
         this.y = y;
         sprite = SpriteLoader.getSprite("images/jet.json");
@@ -86,14 +86,11 @@ public class Jet {
         body.setGravityScale(0f);
         //body.setLinearDamping(0f);
         body.setTransform(new Vec2(x, y), 0f);
-        body.applyForce(new Vec2(-20f, 0), body.getPosition());
-
-
+        body.applyForce(new Vec2(-30f, 0), body.getPosition());
         return  body;
     }
 
     public void update(int delta){
-
         // System.out.println("value = " + (((float) angle / 30f) - 2.8f )) ;
         if(hasLoaded == false) return;
         if (health > 80){
@@ -120,13 +117,20 @@ public class Jet {
                 sprite.setSprite(3); break;
         }
 
-        if ((int)(body.getPosition().x / Play1.M_PER_PIXEL ) == 120){
+        /*if ((int)(body.getPosition().x / Play1.M_PER_PIXEL ) == 120){
             System.out.println("drop the bomb");
-        }
+        }*/
+
 
 
     }
+    public int get__X(){
+        return ((int)xChange) ;
+    }
+    public int get__Y(){
 
+        return ((int)yChange) ;
+    }
 
     public int getAttack(int force){
         this.health = health - force;
@@ -139,10 +143,13 @@ public class Jet {
 
     public void paint(Clock clock) {
         if (!hasLoaded){ return;}
-
+        xChange = ( (body.getPosition().x ) / Play1.M_PER_PIXEL);
+        yChange = ( (body.getPosition().y ) / Play1.M_PER_PIXEL);
         sprite.layer().setTranslation(
                 (body.getPosition().x +1.2f ) / Play1.M_PER_PIXEL  ,
                 (body.getPosition().y + 0.5f)  / Play1.M_PER_PIXEL );
+
+
     }
 
 

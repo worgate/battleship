@@ -63,16 +63,18 @@ public class Play1 extends Screen{
     Jet jet ;
     int mega;
     private  ArrayList<Jet> jetPack = new ArrayList<Jet>();
+    private  ArrayList<Bomb> bombPack = new ArrayList<Bomb>();
+
     int k;
     int latestJet = 0;
 
     int hp,armor,flare,hpMax,armorMax,flareMax;
     Profile profile ;
 
-
     private  ArrayList<Bullet> bullets = new ArrayList<Bullet>();
     public Play1(final ScreenStack ss, final Profile profile) {
         this.profile = profile;
+        hp = profile.hpLevel * 100;
         this.ss = ss;
         this.layer.clear();
 
@@ -110,6 +112,9 @@ public class Play1 extends Screen{
                                 point = jetPack.get(0).getAttack(profile.powerLevel*10);
                             }
                     }
+                }if(bodies.get(a) == "CIWS" && bodies.get(b) == "Bomb"){
+                                hp -= 50;
+                    contact.getFixtureB().getBody().setActive(false);
                 }
 
             }
@@ -131,7 +136,7 @@ public class Play1 extends Screen{
 
         ciws = new Ciws(world,ciwsX,ciwsY,bodies);
         //Mouse Move
-        jetPack.add(new Jet(world,500,200,bodies));
+        jetPack.add(new Jet(world,640,200,bodies,100));
 
 
 
@@ -174,12 +179,22 @@ public class Play1 extends Screen{
         keyboard().setListener(new Keyboard.Adapter(){
             @Override
             public void onKeyUp(Keyboard.Event event) {
-                if (event.key() == Key.K){
-                    ammo = maga;
-                } else if (event.key() == Key.F) {
-                    for (int o = 0 ; o < jetPack.size() ; o++){
-                        jetPack.get(o).body.setActive(false);
+                if (event.key() == Key.R){
+                    if (profile.money >= 10){
+                        profile.money -= 10;
+                        ammo = maga;
                     }
+
+
+                } else if (event.key() == Key.F) {
+                    if (flare >= 1){
+                        flare -= 1;
+                        for (int o = 0 ; o < bombPack.size() ; o++){
+                            bombPack.get(o).body.setActive(false);
+                            bombPack.get(o).sprite.layer().setVisible(false);
+                        }
+                    }
+
 
                 }
             }
@@ -235,7 +250,7 @@ public class Play1 extends Screen{
         super.update(delta);
         world.step(0.033f,10,10);
         ciws.update(delta);
-        System.out.println(jetPack.size());
+       // System.out.println(jetPack.size());
         Random rand = new Random();
         k = rand.nextInt(100)+1;
 
@@ -244,10 +259,29 @@ public class Play1 extends Screen{
             bullets.get(o).update(delta);
         }
 
+        for (int o = 0 ; o < bombPack.size() ; o++){
+            bombPack.get(o).update(delta);
+        }
         for (int o = 0 ; o < jetPack.size() ; o++){
             jetPack.get(o).update(delta);
+            //System.out.println("jet :" + jetPack.size());
+            System.out.println("jet X: " + jetPack.get(o).get__X());
+            if (jetPack.get(o).get__X() == 160 || jetPack.get(o).get__X() == 130 || jetPack.get(o).get__X() == 100){
+                System.out.println("DROP!!");
+                dropTheBomb(jetPack.get(o).get__X(),jetPack.get(o).get__Y());
+            }
+//            System.out.println(jetPack.get(o).body.getPosition().x);
+            // if jetX == 120 drop the bomb
+           /* if(jetPack.get(o).body.getPosition().x == 120){
+                //dropTheBomb(jetPack.get(o).getX0(),jetPack.get(o).getY0());
+                System.out.println("drop the bomb");
+            }*/
         }
-
+        if (hp <= 0){
+            ss.remove(ss.top());
+            ss.remove(ss.top());
+            ss.push(new HomeScreen(ss,profile));
+        }
 
 
 
@@ -264,6 +298,9 @@ public class Play1 extends Screen{
         for (int o = 0 ; o < jetPack.size() ; o++){
             jetPack.get(o).paint(clock);
         }
+        for (int o = 0 ; o < bombPack.size() ; o++){
+            bombPack.get(o).paint(clock);
+        }
 
         if (showDebugDraw){
             debugDraw.getCanvas().clear();
@@ -271,14 +308,14 @@ public class Play1 extends Screen{
             debugDraw.getCanvas().setFillColor(Color.rgb(255,255,255));
             debugDraw.getCanvas().drawText(
                     "HP : " + String.valueOf(hp) + "/" + String.valueOf(hpMax)+
-
-                    "Ammo :"+ String.valueOf(ammo) + " / " + String.valueOf(maga),100f,40f);
-           // debugDraw.getCanvas().drawText("Point :"+ String.valueOf(point),100f,30f);
+                            "    Armor : " + String.valueOf(armor) + "/" + String.valueOf(armorMax)+
+                            "    flare : " + String.valueOf(flare) + "/" + String.valueOf(flareMax),100f,40f);
+           debugDraw.getCanvas().drawText("Money : " +String.valueOf(profile.money) +
+                   "      Ammo : " +  String.valueOf(ammo) +"/" +  String.valueOf(maga),100f,50f);
 
             if (ammo == 0 ){
-                    debugDraw.getCanvas().drawText("Out of ammo",100f,50f);
+                    debugDraw.getCanvas().drawText("Out of ammo! Press R to buy (cost 10)",240f,120f);
             }
-
             /*
             switch (k){
                 case 1:
@@ -293,9 +330,9 @@ public class Play1 extends Screen{
     public  void shootOut(float yk, float mx, final World world, float x, float y) {
         float bk = yk;
 
-        System.out.println("YK : " + yk + "MX : "+mx);
+        //System.out.println("YK : " + yk + "MX : "+mx);
         bullets.add(new Bullet(world, ciwsX, ciwsY, yk ,  mx ,this.bodies));
-        bullets.add(new Bullet(world, ciwsX, ciwsY, yk ,  mx  ,this.bodies));
+        //bullets.add(new Bullet(world, ciwsX, ciwsY, yk ,  mx  ,this.bodies));
 
         for (int o = 0 ; o < bullets.size() ; o++){
                 this.layer.add(bullets.get(o).layer());
@@ -303,20 +340,30 @@ public class Play1 extends Screen{
         }
 
     }
+
+    public void dropTheBomb(int x,int y){
+        bombPack.add(new Bomb(world,x,y,bodies));
+
+        for (int o = 0 ; o < bombPack.size() ; o++){
+            this.layer.add(bombPack.get(o).layer());
+            bodies.put(bombPack.get(o),"Bomb");
+        }
+
+
+    }
+
+
     float rand;
 
-
-
     public void generateEnemy(){
-        System.out.println(jetPack.size());
+       // System.out.println(jetPack.size());
         rand = random()*1000 ;
         rand %= 250;
         System.out.println("rand :" +rand);
 
         latestJet = jetPack.size();
-        jetPack.add(new Jet(world,500,rand,bodies));
+        jetPack.add(new Jet(world,500,rand,bodies,30));
         this.layer.add(jetPack.get(latestJet).layer());
-
 
     }
 
