@@ -97,6 +97,9 @@ public class Bullet {
             sprite.setSprite(spriteIndex);
             e = 0;
         }
+        if (body.isActive() == false){
+            sprite.layer().setVisible(false);
+        }
 
 
     }

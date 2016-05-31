@@ -29,7 +29,8 @@ public class HomeScreen extends Screen {
     private ImageLayer selectButton;
     private Image exit;
     private ImageLayer exitButton;
-
+    private  ImageLayer upgrade;
+    private  ImageLayer upgradeButton;
 
     //private ImageLayer tuButton;
     //private Image tu;
@@ -67,6 +68,10 @@ public class HomeScreen extends Screen {
         exitButton.setTranslation(10,440);
         exitButton.setSize(200,30);
 
+        Image upgrade = assets().getImage("Images/button/upgrade.png");
+        this.upgradeButton = graphics().createImageLayer(upgrade);
+        upgradeButton.setScale(0.08f,0.08f);
+        upgradeButton.setTranslation(30,30);
 
         startButton.addListener(new Mouse.LayerAdapter(){
         @Override
@@ -79,6 +84,13 @@ public class HomeScreen extends Screen {
             @Override
             public void onMouseUp(Mouse.ButtonEvent event){
                 ss.push(new SelectLevel(ss,profile));
+            }
+        });
+
+        upgradeButton.addListener(new Mouse.LayerAdapter(){
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event){
+                ss.push(new Upgrade(ss,profile));
             }
         });
 
@@ -97,6 +109,7 @@ public class HomeScreen extends Screen {
        this.layer.add(tutorialButton);
         this.layer.add(rankingButton);
         this.layer.add(selectButton);
+        this.layer.add(upgradeButton);
         this.layer.add(exitButton);
 
     }

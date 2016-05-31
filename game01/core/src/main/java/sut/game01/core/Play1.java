@@ -15,7 +15,7 @@ import playn.core.util.Clock;
 import playn.core.util.TextBlock;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
-
+import playn.core.Sound;
 import java.util.*;
 
 import static playn.core.PlayN.*;
@@ -70,14 +70,19 @@ public class Play1 extends Screen{
 
     int hp,armor,flare,hpMax,armorMax,flareMax;
     Profile profile ;
-
+    long timeCounter;
+    //int countEnemy = 0;
+    int MaxEnemy = 5;
+    int[]  timeline = {50,200,300,100,400,450,500,650,700,750};
+    int[] positionY = {250,220,180,260,300,240,170,320,220,250};
     private  ArrayList<Bullet> bullets = new ArrayList<Bullet>();
     public Play1(final ScreenStack ss, final Profile profile) {
         this.profile = profile;
         hp = profile.hpLevel * 100;
+        MaxEnemy = timeline.length + 1;
+
         this.ss = ss;
         this.layer.clear();
-
         ///==============================WORLD SETUP ========================///
         final Vec2 gravity = new Vec2(0.0f , 10.0f);
         world = new World(gravity);
@@ -105,20 +110,29 @@ public class Play1 extends Screen{
                 Body b = contact.getFixtureB().getBody();
                 System.out.println("A = " + bodies.get(a) + a.getPosition());
                 System.out.println("B = " + bodies.get(b) + b.getPosition() );
-                if (bodies.get(a) == "Jet" && bodies.get(b) == "Bullet"){
+                if ( (bodies.get(a) == "Jet" && bodies.get(b) == "Bullet")  ){
+                    //System.out.println("Hit");
                     for (int o = 0 ; o < jetPack.size() ; o++){
-                            if (jetPack.get(0).body == contact.getFixtureA().getBody()){
-                                System.out.println(profile.powerLevel*10);
-                                point = jetPack.get(0).getAttack(profile.powerLevel*10);
+                            if (jetPack.get(o).body == contact.getFixtureA().getBody()){
+                                //System.out.println(profile.powerLevel*50);
+                                point = jetPack.get(o).getAttack( (float)(profile.powerLevel*10));
+                                System.out.println(point);
+                                contact.getFixtureB().getBody().setActive(false);
                             }
+                            //contact.getFixtureB().getBody().setActive(false);
                     }
-                }if(bodies.get(a) == "CIWS" && bodies.get(b) == "Bomb"){
-                                hp -= 50;
+
+                }else if(bodies.get(a) == "CIWS" && bodies.get(b) == "Bomb"){
+                    if (armor > 0){
+                        armor -= 20;
+                        if (armor < 0){ armor = 0;}
+                    }else {
+                        hp -= 20;
+                    }
+
                     contact.getFixtureB().getBody().setActive(false);
                 }
-
             }
-
             @Override
             public void endContact(Contact contact) {         }
 
@@ -132,13 +146,11 @@ public class Play1 extends Screen{
         });
         this.hp = hpMax = profile.hpLevel*100;
         this.armor = armorMax  = profile.armorLevel * 100;
-        this.flare =  flareMax =profile.flareLevel;
+        this.flare =  flareMax = profile.flareLevel;
 
         ciws = new Ciws(world,ciwsX,ciwsY,bodies);
         //Mouse Move
         jetPack.add(new Jet(world,640,200,bodies,100));
-
-
 
         mouse().setListener(new Mouse.Adapter(){
             @Override
@@ -169,6 +181,7 @@ public class Play1 extends Screen{
                     ammo = ammo - 1;
                     if (mx < 300){
                         shootOut(yk+30f , mx ,world,x,y);
+
                     }else {
                         shootOut(yk , mx ,world,x,y);
                     }
@@ -239,7 +252,7 @@ public class Play1 extends Screen{
             debugDraw.setStrokeAlpha(150);
             debugDraw.setFillAlpha(75);
             debugDraw.setStrokeWidth(2.0f);
-            debugDraw.setFlags( DebugDraw.e_shapeBit|DebugDraw.e_jointBit |DebugDraw.e_aabbBit);
+         //   debugDraw.setFlags( DebugDraw.e_shapeBit|DebugDraw.e_jointBit |DebugDraw.e_aabbBit);
             debugDraw.setCamera(0, 0, 1f / Play1.M_PER_PIXEL);
             world.setDebugDraw(debugDraw);
         }
@@ -248,12 +261,29 @@ public class Play1 extends Screen{
     @Override
     public void update(int delta){
         super.update(delta);
-        world.step(0.033f,10,10);
+        world.step(0.040f,10,10);
         ciws.update(delta);
-       // System.out.println(jetPack.size());
-        Random rand = new Random();
-        k = rand.nextInt(100)+1;
+        timeCounter += 1;
+        for (i= 0 ; i < timeline.length ; i++){
+            if (timeCounter == timeline[i]){
+                generateEnemy(positionY[i]);
+            }
+        }
+        System.out.println("Pack :" +jetPack.size());
+        System.out.println("Max :" +MaxEnemy);
+        if (jetPack.size() == MaxEnemy){
+            int k=0;
 
+            for (int o = 0 ; o < jetPack.size() ; o++){
+                if (jetPack.get(o).layer().visible() == false){
+                    k++;
+                }
+            }
+            if (k == MaxEnemy){
+                gameOver();
+            }
+            System.out.println(k);
+        }
 
         for (int o = 0 ; o < bullets.size() ; o++){
             bullets.get(o).update(delta);
@@ -264,9 +294,9 @@ public class Play1 extends Screen{
         }
         for (int o = 0 ; o < jetPack.size() ; o++){
             jetPack.get(o).update(delta);
-            //System.out.println("jet :" + jetPack.size());
-            System.out.println("jet X: " + jetPack.get(o).get__X());
-            if (jetPack.get(o).get__X() == 160 || jetPack.get(o).get__X() == 130 || jetPack.get(o).get__X() == 100){
+
+            if (jetPack.get(o).get__X() == 160 || jetPack.get(o).get__X() == 130 || jetPack.get(o).get__X() == 100 ||
+                    jetPack.get(o).get__X() == 161 || jetPack.get(o).get__X() == 131 || jetPack.get(o).get__X() == 101){
                 System.out.println("DROP!!");
                 dropTheBomb(jetPack.get(o).get__X(),jetPack.get(o).get__Y());
             }
@@ -278,13 +308,15 @@ public class Play1 extends Screen{
             }*/
         }
         if (hp <= 0){
-            ss.remove(ss.top());
-            ss.remove(ss.top());
-            ss.push(new HomeScreen(ss,profile));
+           gameOver();
         }
 
+    }
 
-
+    private void gameOver() {
+        ss.remove(ss.top());
+        ss.remove(ss.top());
+        ss.push(new GameOver(ss,profile));
     }
 
     @Override
@@ -329,11 +361,7 @@ public class Play1 extends Screen{
 
     public  void shootOut(float yk, float mx, final World world, float x, float y) {
         float bk = yk;
-
-        //System.out.println("YK : " + yk + "MX : "+mx);
         bullets.add(new Bullet(world, ciwsX, ciwsY, yk ,  mx ,this.bodies));
-        //bullets.add(new Bullet(world, ciwsX, ciwsY, yk ,  mx  ,this.bodies));
-
         for (int o = 0 ; o < bullets.size() ; o++){
                 this.layer.add(bullets.get(o).layer());
                 bodies.put(bullets.get(o),"Bullet");
@@ -352,19 +380,11 @@ public class Play1 extends Screen{
 
     }
 
-
-    float rand;
-
-    public void generateEnemy(){
-       // System.out.println(jetPack.size());
-        rand = random()*1000 ;
-        rand %= 250;
-        System.out.println("rand :" +rand);
-
+    public void generateEnemy(int y){
         latestJet = jetPack.size();
-        jetPack.add(new Jet(world,500,rand,bodies,30));
+        System.out.println("Jet No:" + jetPack.size());
+        jetPack.add(new Jet(world,680,y,bodies,50));
         this.layer.add(jetPack.get(latestJet).layer());
-
     }
 
 

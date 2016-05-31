@@ -28,12 +28,16 @@ public class Jet {
     private  int e = 0;
     private int offset = 8;
 
-    private  int health = 100;
-
+    private  float health=100 ;
+    int healthMax=100;
+    float percent=100;
     float x,y;
-    float xChange,yChange;
+    float xChange =200,yChange=200;
     public Jet(final World world,final float x , final float y,final HashMap<Body,String> bodies,int health){
         this.health = health;
+        this.healthMax = health;
+        percent = (this.health / healthMax) * 100;
+        //System.out.println(percent);
         this.x = x;
         this.y = y;
         sprite = SpriteLoader.getSprite("images/jet.json");
@@ -65,7 +69,6 @@ public class Jet {
 
     public Layer layer(){
 
-
         return sprite.layer();
     }
     private Body initPhysicsBody(World world,float x , float y){
@@ -84,25 +87,27 @@ public class Jet {
         fixtureDef.friction = 0.1f;
         body.createFixture(fixtureDef);
         body.setGravityScale(0f);
+       // body.setBullet(false);
         //body.setLinearDamping(0f);
         body.setTransform(new Vec2(x, y), 0f);
-        body.applyForce(new Vec2(-30f, 0), body.getPosition());
+        body.applyForce(new Vec2(-40f, 0), body.getPosition());
         return  body;
     }
 
     public void update(int delta){
         // System.out.println("value = " + (((float) angle / 30f) - 2.8f )) ;
         if(hasLoaded == false) return;
-        if (health > 80){
+
+        percent = (health / healthMax) * 100;
+        if (percent > 80){
             state = State.MAX;
-        }else if (health > 60){
+        }else if (percent > 60){
             state = State.MID;
-        }else  if (health > 0){
+        }else  if (percent > 20){
             state = State.MIN;
         }else {
             state =State.DESTROY;
         }
-
         switch (state){
             case MAX:
                 sprite.setSprite(0); break;
@@ -115,6 +120,14 @@ public class Jet {
                 body.setActive(false);
                 sprite.layer().setVisible(false);
                 sprite.setSprite(3); break;
+        }
+
+
+
+        if (get__X() <= 0){
+           kill();
+        }else if(get__Y() <= 0){
+            kill();
         }
 
         /*if ((int)(body.getPosition().x / Play1.M_PER_PIXEL ) == 120){
@@ -132,11 +145,16 @@ public class Jet {
         return ((int)yChange) ;
     }
 
-    public int getAttack(int force){
-        this.health = health - force;
-        if (health<=0){ health = 0;}
-        if (health <= 0){
-            return 10;
+    public int getAttack(float force){
+        health = health - force;
+        System.out.println("force :" + force + " health : "+ health + "healthMax :" + healthMax);
+        //System.out.println(health/healthMax);
+        //System.out.println(90%100);
+        percent = ((health % healthMax));
+        //System.out.println("percent : " + percent + " health : " + health);
+        //if (percent <=0 ){ percent = 0;}
+        if (percent <= 0){
+            return 2;
         }else return  0;
 
     }
@@ -148,9 +166,13 @@ public class Jet {
         sprite.layer().setTranslation(
                 (body.getPosition().x +1.2f ) / Play1.M_PER_PIXEL  ,
                 (body.getPosition().y + 0.5f)  / Play1.M_PER_PIXEL );
-
-
     }
+    public void kill(){
+        body.setActive(false);
+        layer().setVisible(false);
+    }
+
+
 
 
 }
