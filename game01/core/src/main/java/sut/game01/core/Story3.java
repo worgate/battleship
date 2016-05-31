@@ -1,38 +1,40 @@
 package sut.game01.core;
 import static playn.core.PlayN.*;
 
-import playn.core.*;
+import characters.Profile;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
+import playn.core.Image;
+import playn.core.ImageLayer;
+import playn.core.Mouse;
 
 public class Story3 extends Screen{
     private  final ScreenStack ss;
     private  ImageLayer bg;
-    private  ImageLayer backButton;
 
-    public Story3(final ScreenStack ss) {
+    private  ImageLayer playLayer;
+    private  Image play;
+
+    public Story3(final ScreenStack ss,final Profile profile) {
         this.ss = ss;
-        System.out.println("Story3");
+
         Image bgImage = assets().getImage("Images/story/story3.png");
         this.bg = graphics().createImageLayer(bgImage);
 
-        Image backImage = assets().getImage("Images/back.png");
-        this.backButton = graphics().createImageLayer(backImage);
-        backButton.setTranslation(0,400);
+        Image play = assets().getImage("Images/button/start.png");
+        this.playLayer = graphics().createImageLayer(play);
+        playLayer.setScale(0.4f,0.4f);
+        playLayer.setTranslation(470,50f);
 
-    /*
-        keyboard().setListener(new Keyboard.Adapter(){
+        playLayer.addListener(new Mouse.LayerAdapter(){
             @Override
-            public void onKeyUp(Keyboard.Event event) {
-                if(event.key() == Key.F3 ){
-                   ss.remove(ss.top());
-                   ss.remove(ss.top());
-                   System.out.println( ss.size() );
-                   ss.push(new HomeScreen(ss));
+            public void onMouseUp(Mouse.ButtonEvent event){
+                for (int i=0;i < ss.size() ; i++){
+                    ss.remove(ss.top());
                 }
+                ss.push(new SelectLevel(ss,profile));
             }
         });
-        */
 
     }
 
@@ -40,7 +42,7 @@ public class Story3 extends Screen{
     public void wasShown() {
         super.wasShown();
         this.layer.add(bg);
-        this.layer.add(backButton);
+        this.layer.add(playLayer);
     }
 
 

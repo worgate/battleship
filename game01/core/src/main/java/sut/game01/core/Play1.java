@@ -76,6 +76,9 @@ public class Play1 extends Screen{
     int[]  timeline = {50,200,300,100,400,450,500,650,700,750};
     int[] positionY = {250,220,180,260,300,240,170,320,220,250};
     private  ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+    int jetHp = 50;
+
+
     public Play1(final ScreenStack ss, final Profile profile) {
         this.profile = profile;
         hp = profile.hpLevel * 100;
@@ -108,15 +111,15 @@ public class Play1 extends Screen{
             public void beginContact(Contact contact) {
                 Body a = contact.getFixtureA().getBody();
                 Body b = contact.getFixtureB().getBody();
-                System.out.println("A = " + bodies.get(a) + a.getPosition());
-                System.out.println("B = " + bodies.get(b) + b.getPosition() );
+               // System.out.println("A = " + bodies.get(a) + a.getPosition());
+              //  System.out.println("B = " + bodies.get(b) + b.getPosition() );
                 if ( (bodies.get(a) == "Jet" && bodies.get(b) == "Bullet")  ){
                     //System.out.println("Hit");
                     for (int o = 0 ; o < jetPack.size() ; o++){
                             if (jetPack.get(o).body == contact.getFixtureA().getBody()){
                                 //System.out.println(profile.powerLevel*50);
                                 point = jetPack.get(o).getAttack( (float)(profile.powerLevel*10));
-                                System.out.println(point);
+                                profile.money += point;
                                 contact.getFixtureB().getBody().setActive(false);
                             }
                             //contact.getFixtureB().getBody().setActive(false);
@@ -150,7 +153,7 @@ public class Play1 extends Screen{
 
         ciws = new Ciws(world,ciwsX,ciwsY,bodies);
         //Mouse Move
-        jetPack.add(new Jet(world,640,200,bodies,100));
+        jetPack.add(new Jet(world,640,200,bodies,jetHp));
 
         mouse().setListener(new Mouse.Adapter(){
             @Override
@@ -207,14 +210,13 @@ public class Play1 extends Screen{
                             bombPack.get(o).sprite.layer().setVisible(false);
                         }
                     }
-
-
                 }
             }
         });
 
-        Image backImage = assets().getImage("Images/back.png");
+        Image backImage = assets().getImage("Images/button/stop.png");
         backButton = graphics().createImageLayer(backImage);
+        backButton.setScale(0.2f,0.2f);
         backButton.setTranslation(20,50);
 
         backButton.addListener(new Mouse.LayerAdapter(){
@@ -261,7 +263,13 @@ public class Play1 extends Screen{
     @Override
     public void update(int delta){
         super.update(delta);
-        world.step(0.040f,10,10);
+        try {
+            world.step(0.045f,10,10);
+        }catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("error");
+        }
+
+
         ciws.update(delta);
         timeCounter += 1;
         for (i= 0 ; i < timeline.length ; i++){
@@ -269,8 +277,8 @@ public class Play1 extends Screen{
                 generateEnemy(positionY[i]);
             }
         }
-        System.out.println("Pack :" +jetPack.size());
-        System.out.println("Max :" +MaxEnemy);
+       // System.out.println("Pack :" +jetPack.size());
+       // System.out.println("Max :" +MaxEnemy);
         if (jetPack.size() == MaxEnemy){
             int k=0;
 
@@ -280,9 +288,13 @@ public class Play1 extends Screen{
                 }
             }
             if (k == MaxEnemy){
-                gameOver();
+                for (int i=0;i < ss.size() ; i++){
+                    ss.remove(ss.top());
+                }
+                profile.level =2;
+                ss.push(new Story2(ss,profile));
             }
-            System.out.println(k);
+           // System.out.println(k);
         }
 
         for (int o = 0 ; o < bullets.size() ; o++){
@@ -297,7 +309,7 @@ public class Play1 extends Screen{
 
             if (jetPack.get(o).get__X() == 160 || jetPack.get(o).get__X() == 130 || jetPack.get(o).get__X() == 100 ||
                     jetPack.get(o).get__X() == 161 || jetPack.get(o).get__X() == 131 || jetPack.get(o).get__X() == 101){
-                System.out.println("DROP!!");
+             //   System.out.println("DROP!!");
                 dropTheBomb(jetPack.get(o).get__X(),jetPack.get(o).get__Y());
             }
 //            System.out.println(jetPack.get(o).body.getPosition().x);
@@ -382,8 +394,8 @@ public class Play1 extends Screen{
 
     public void generateEnemy(int y){
         latestJet = jetPack.size();
-        System.out.println("Jet No:" + jetPack.size());
-        jetPack.add(new Jet(world,680,y,bodies,50));
+       // System.out.println("Jet No:" + jetPack.size());
+        jetPack.add(new Jet(world,680,y,bodies,jetHp));
         this.layer.add(jetPack.get(latestJet).layer());
     }
 

@@ -19,7 +19,7 @@ public class MyGame extends Game.Default {
 
   @Override
   public void init() {
-      final Profile profile = new Profile(200,1,1,1,1,1);
+      final Profile profile = new Profile(100,1,1,1,1,1,1);
       ss.push(new HomeScreen(ss,profile));
 
   }

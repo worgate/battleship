@@ -9,12 +9,7 @@ import tripleplay.game.ScreenStack;
 
 public class HomeScreen extends Screen {
     private ScreenStack ss;
-    /*
-    private Play1 play1;
-    private Story1 story1;
-    private Tutorials tutorials;
-    private Ranking rankings;
-    private SelectLevel selectLevel;*/
+
 
     private ImageLayer bg;
     private Image bgImage;
@@ -31,9 +26,8 @@ public class HomeScreen extends Screen {
     private ImageLayer exitButton;
     private  ImageLayer upgrade;
     private  ImageLayer upgradeButton;
-
-    //private ImageLayer tuButton;
-    //private Image tu;
+    private Image credits;
+    private ImageLayer creditsButton;
 
     public HomeScreen(final ScreenStack ss,final  Profile profile){
         this.ss = ss;
@@ -53,7 +47,7 @@ public class HomeScreen extends Screen {
         tutorialButton.setTranslation(10,335);
         tutorialButton.setSize(200,30);
 
-        ranking = assets().getImage("Images/button/ranking_mode.png");
+        ranking = assets().getImage("Images/button/ranking_mode_1.png");
         rankingButton = graphics().createImageLayer(ranking);
         rankingButton.setTranslation(10,370);
         rankingButton.setSize(200,30);
@@ -68,6 +62,15 @@ public class HomeScreen extends Screen {
         exitButton.setTranslation(10,440);
         exitButton.setSize(200,30);
 
+        credits = assets().getImage("Images/button/credits.png");
+        creditsButton = graphics().createImageLayer(credits);
+        creditsButton.setScale(0.3f,0.3f);
+        creditsButton.setTranslation(500,430);
+
+        //creditsButton.setSize(200,30);
+
+
+
         Image upgrade = assets().getImage("Images/button/upgrade.png");
         this.upgradeButton = graphics().createImageLayer(upgrade);
         upgradeButton.setScale(0.08f,0.08f);
@@ -76,7 +79,13 @@ public class HomeScreen extends Screen {
         startButton.addListener(new Mouse.LayerAdapter(){
         @Override
         public void onMouseUp(Mouse.ButtonEvent event){
-                    ss.push(new Play1(ss,profile));
+                if (profile.level == 1){
+                    ss.push(new Story1(ss,profile));
+                }else if(profile.level == 2){
+                    ss.push(new Story2(ss,profile));
+                }else if(profile.level == 3){
+                    ss.push(new Story3(ss,profile));
+                }
             }
         });
 
@@ -94,7 +103,24 @@ public class HomeScreen extends Screen {
             }
         });
 
-
+        creditsButton.addListener(new Mouse.LayerAdapter(){
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event){
+                ss.push(new Credits(ss,profile));
+            }
+        });
+        tutorialButton.addListener(new Mouse.LayerAdapter(){
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event){
+                ss.push(new Tutorials(ss,profile));
+            }
+        });
+        exitButton.addListener(new Mouse.LayerAdapter(){
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event){
+                System.exit(0);
+            }
+        });
 
 
 
@@ -110,6 +136,7 @@ public class HomeScreen extends Screen {
         this.layer.add(rankingButton);
         this.layer.add(selectButton);
         this.layer.add(upgradeButton);
+        this.layer.add(creditsButton);
         this.layer.add(exitButton);
 
     }

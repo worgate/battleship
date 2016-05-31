@@ -47,16 +47,15 @@ public class Upgrade extends Screen{
             @Override
             public void onMouseUp(Mouse.ButtonEvent event){
                 ss.remove(ss.top());
-                ss.remove(ss.top());
-                ss.push(new HomeScreen(ss,profile));
-            }
-        });
+
+    }
+});
 
         hp.layer().addListener(new Mouse.LayerAdapter(){
-            @Override
-            public void onMouseDown(Mouse.ButtonEvent event) {
-               hp.hpLevelUp(profile);
-            }
+@Override
+public void onMouseDown(Mouse.ButtonEvent event) {
+        hp.hpLevelUp(profile);
+        }
         });
         armor.layer().addListener(new Mouse.LayerAdapter(){
             @Override
@@ -110,6 +109,12 @@ public class Upgrade extends Screen{
         armor.update(delta);
         power.update(delta);
         flare.update(delta);
-        skin.update(delta);
+        try {
+            skin.update(delta);
+        }catch (IndexOutOfBoundsException e){
+
+        }
+
+
     }
 }

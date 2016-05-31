@@ -1,6 +1,7 @@
 package sut.game01.core;
 import static playn.core.PlayN.*;
 
+import characters.Profile;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
 import playn.core.Image;
@@ -10,40 +11,38 @@ import playn.core.Mouse;
 public class Story1 extends Screen{
     private  final ScreenStack ss;
     private  ImageLayer bg;
-    private  ImageLayer backButton;
-    private  ImageLayer battleship;
-    private  Image battleshippic;
 
+    private  ImageLayer playLayer;
+    private  Image play;
 
-
-    public Story1(final ScreenStack ss) {
+    public Story1(final ScreenStack ss,final Profile profile) {
         this.ss = ss;
 
         Image bgImage = assets().getImage("Images/story/story1.png");
         this.bg = graphics().createImageLayer(bgImage);
 
-        Image backImage = assets().getImage("Images/back.png");
-        this.backButton = graphics().createImageLayer(backImage);
-        backButton.setTranslation(0,0);
+        Image play = assets().getImage("Images/button/start.png");
+        this.playLayer = graphics().createImageLayer(play);
+        playLayer.setScale(0.4f,0.4f);
+        playLayer.setTranslation(470,50f);
 
-
-
-
-        backButton.addListener(new Mouse.LayerAdapter(){
+        playLayer.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event){
-                ss.remove(ss.top());
-
-
+                for (int i=0;i < ss.size() ; i++){
+                    ss.remove(ss.top());
+                }
+                    ss.push(new Play1(ss,profile));
             }
         });
     }
+
 
     @Override
     public void wasShown() {
         super.wasShown();
         this.layer.add(bg);
-        this.layer.add(backButton);
+        this.layer.add(playLayer);
 
     }
 

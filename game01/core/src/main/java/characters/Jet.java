@@ -90,7 +90,14 @@ public class Jet {
        // body.setBullet(false);
         //body.setLinearDamping(0f);
         body.setTransform(new Vec2(x, y), 0f);
-        body.applyForce(new Vec2(-40f, 0), body.getPosition());
+        if (healthMax == 50){
+            body.applyForce(new Vec2(-30f, 0), body.getPosition());
+        }else if (healthMax == 70){
+            body.applyForce(new Vec2(-35f, 0), body.getPosition());
+        }else if(healthMax == 100){
+            body.applyForce(new Vec2(-30f, 0), body.getPosition());
+        }
+
         return  body;
     }
 
@@ -147,7 +154,7 @@ public class Jet {
 
     public int getAttack(float force){
         health = health - force;
-        System.out.println("force :" + force + " health : "+ health + "healthMax :" + healthMax);
+       // System.out.println("force :" + force + " health : "+ health + "healthMax :" + healthMax);
         //System.out.println(health/healthMax);
         //System.out.println(90%100);
         percent = ((health % healthMax));

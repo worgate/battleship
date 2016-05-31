@@ -20,10 +20,10 @@ public class SelectLevel extends Screen{
     private  ImageLayer lv3Button;
     private  ImageLayer upgrade;
     private  ImageLayer upgradeButton;
-
+    int level;
     public SelectLevel(final ScreenStack ss, final Profile profile) {
         this.ss = ss;
-
+        this.level = profile.level;
         Image bgImage = assets().getImage("Images/story/select.png");
         this.bg = graphics().createImageLayer(bgImage);
 
@@ -36,16 +36,20 @@ public class SelectLevel extends Screen{
         this.lv1Button = graphics().createImageLayer(lv1);
         lv1Button.setScale(0.4f,0.4f);
         lv1Button.setTranslation(194,150);
+        if (level == 2 || level == 3){
+            Image lv2 = assets().getImage("Images/button/level2.png");
+            this.lv2Button = graphics().createImageLayer(lv2);
+            lv2Button.setScale(0.4f,0.4f);
+            lv2Button.setTranslation(188,190);
+        }
 
-        Image lv2 = assets().getImage("Images/button/level2.png");
-        this.lv2Button = graphics().createImageLayer(lv2);
-        lv2Button.setScale(0.4f,0.4f);
-        lv2Button.setTranslation(188,190);
+        if (level == 3){
+            Image lv3 = assets().getImage("Images/button/level3.png");
+            this.lv3Button = graphics().createImageLayer(lv3);
+            lv3Button.setScale(0.4f,0.4f);
+            lv3Button.setTranslation(180,230);
+        }
 
-        Image lv3 = assets().getImage("Images/button/level3.png");
-        this.lv3Button = graphics().createImageLayer(lv3);
-        lv3Button.setScale(0.4f,0.4f);
-        lv3Button.setTranslation(180,230);
         //===========================================//
         Image upgrade = assets().getImage("Images/button/upgrade.png");
         this.upgradeButton = graphics().createImageLayer(upgrade);
@@ -60,7 +64,6 @@ public class SelectLevel extends Screen{
             }
         });
 
-
         backButton.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event){
@@ -70,25 +73,52 @@ public class SelectLevel extends Screen{
             }
         });
 
+        lv1Button.addListener(new Mouse.LayerAdapter(){
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event){
+                for (int i=0;i < ss.size() ; i++){
+                    ss.remove(ss.top());
+                }
+                ss.push(new Story1(ss,profile));
+            }
+        });
+        if (level >= 2){
+            lv2Button.addListener(new Mouse.LayerAdapter(){
+                @Override
+                public void onMouseUp(Mouse.ButtonEvent event){
+                    for (int i=0;i < ss.size() ; i++){
+                        ss.remove(ss.top());
+                    }
+                    ss.push(new Play2(ss,profile));
+                }
+            });
+        }
+        if (level > 2){
+            lv3Button.addListener(new Mouse.LayerAdapter(){
+                @Override
+                public void onMouseUp(Mouse.ButtonEvent event){
+                    for (int i=0;i < ss.size() ; i++){
+                        ss.remove(ss.top());
+                    }
+                    ss.push(new Play3(ss,profile));
+                }
+            });
+        }
 
 
     }
-
-
-
-
-
-
-
-
-
     @Override
     public void wasShown() {
         super.wasShown();
         this.layer.add(bg);
         this.layer.add(lv1Button);
-        this.layer.add(lv2Button);
-        this.layer.add(lv3Button);
+        if (level == 2 || level == 3){
+            this.layer.add(lv2Button);
+        }
+        if (level == 3){
+            this.layer.add(lv3Button);
+        }
+
         this.layer.add(upgradeButton);
         this.layer.add(backButton);
 
