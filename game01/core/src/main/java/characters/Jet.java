@@ -160,7 +160,7 @@ public class Jet {
         percent = ((health % healthMax));
         //System.out.println("percent : " + percent + " health : " + health);
         //if (percent <=0 ){ percent = 0;}
-        if (percent <= 0){
+        if (percent <= 5){
             return 2;
         }else return  0;
 

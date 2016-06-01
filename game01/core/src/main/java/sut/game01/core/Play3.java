@@ -75,8 +75,8 @@ public class Play3 extends Screen{
     long timeCounter;
     //int countEnemy = 0;
     int MaxEnemy = 5;
-    int[]  timeline = {50,200,300,100,400,450,500,650,700,750};
-    int[] positionY = {250,220,180,260,300,240,170,320,220,250};
+    int[]  timeline = {50,200,300,100,400,450,500,650,700,750,770,790,810};
+    int[] positionY = {250,220,180,260,300,240,170,320,220,250,270,290,310};
     private  ArrayList<Bullet> bullets = new ArrayList<Bullet>();
     int jetHp = 100;
 
@@ -95,7 +95,7 @@ public class Play3 extends Screen{
 
         playbg = assets().getImage("/images/sea_bg.png");
         bglayer = graphics().createImageLayer(playbg);
-        sky = assets().getImage("/images/sky.png");
+        sky = assets().getImage("/images/story/bg3.png");
         skyL = graphics().createImageLayer(sky);
         if (profile.skin == 1){
             ship = assets().getImage("/images/char/ship.png");
